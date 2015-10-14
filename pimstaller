@@ -1,0 +1,202 @@
+#!/usr/bin/python3
+
+import subprocess
+import sys
+import json
+import markdown
+import yaml
+import re
+import unicodedata
+from urllib import request
+
+BASE_URL = "https://raw.githubusercontent.com/Gadgetoid/Pinout2/master/src/en-GB/overlay/"
+
+FG_BLACK = 30
+FG_RED = 31
+FG_GREEN = 32
+FG_YELLOW = 33
+FG_BLUE = 34
+FG_MAGENTA = 35
+FG_CYAN = 36
+FG_WHITE = 37
+BG_BLACK = 40
+BG_RED = 41
+
+def load_yaml(file):
+    '''
+    Loads and parses JSON-embedded Markdown file, chopping out and
+    parsing any JSON contained therein.
+
+    Returns an object that includes the JSON data, and the parsed HTML.
+    '''
+    markson = None
+    if file.startswith("http"):
+        markson = request.urlopen(file).read().decode()
+    else:
+        markson = open(file).read()
+
+    _data = re.search(re.compile(r'<!--(JSON:|\n---\n)(.*)-->', re.DOTALL),markson)
+
+    _markdown = re.sub(re.compile(r'<!--(JSON:|\n---\n)(.*)-->', re.DOTALL),'',markson)
+    _html = markdown.markdown(_markdown, extensions=['fenced_code'])
+
+    # Scan for the Title in the Markdown file, this is always assumed
+    # to be the first string starting with a single hash/pound ( # ) sign
+    _title = re.search(re.compile(r'^#[^\#](.*)$', re.MULTILINE),markson)
+
+    if _title != None:
+        _title = _title.group(0).replace('#','').strip()
+
+    if _data != None:
+        _type = _data.group(0)[4:8].upper().strip()
+
+        if _type == 'JSON':
+            _data = re.search('\{(.*)\}',_data.group(0),re.DOTALL).group(0)
+            _data = json.loads(_data)
+        elif _type == '---':
+            _data = re.search('\n(.*)\n',_data.group(0),re.DOTALL).group(0)
+            _data = yaml.load(_data)
+        else:
+            data = {}
+
+        _data['title'] = _title
+
+    elif _title != None:
+        _data = {'title':_title}
+
+    return {'data':_data, 'html':_html}
+
+def okay(message):
+    print_in_color(FG_GREEN,BG_BLACK,message)
+
+
+def warning(message):
+    print_in_color(FG_YELLOW,BG_BLACK,message)
+
+
+def error(message):
+    print_in_color(FG_RED,BG_BLACK,message)
+
+
+def print_in_color(fg,bg,message):
+    print('\x1b[0;' + str(fg) + ';' + str(bg) + 'm' + message + '\x1b[0m')
+
+
+def run_cmd(cmd):
+    return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+
+
+def pip_check(package_name):
+    cmd = "pip search " + package_name
+    result = run_cmd(cmd)
+    return 'INSTALLED' in result
+
+
+def pip3_check(package_name):
+    cmd = "pip3 search " + package_name
+    result = run_cmd(cmd)
+    return 'INSTALLED' in result
+
+
+def apt_check(package_name):
+    cmd = "dpkg-query -W --showformat='${Status}' " + package_name
+    result = run_cmd(cmd)
+    return result == 'install ok installed'
+
+
+def install_apt_packages(package_list):
+    print("Checking for apt packages...")
+    for package in package_list:
+        print("Checking for {}".format(package))
+        if apt_check(package):
+            okay("Found!")
+        else:
+            warning("Not found!")
+
+
+def install_python_packages(package_list):
+    print("Checking for Python packages...")
+    req2 = []
+    req3 = []
+    for package in package_list:
+        print("Checking for {}".format(package))
+
+        if pip_check(package):
+            okay("Found, Python 2!")
+        else:
+            warning("Not found, Python 2!")
+            req2.append(package)
+
+        if pip3_check(package):
+            okay("Found, Python 3!")
+        else:
+            req3.append(package)
+            warning("Not found, Python 3!")
+        
+        if len(req2) > 0:
+            print("Installing required packages for Python 2")
+            cmd = "sudo pip install " + " ".join(req2)
+            warning(cmd)
+            result = run_cmd(cmd)
+            for package in req2:
+                if "Successfully installed " + package in result:
+                    okay("Successfully installed " + package)
+
+        if len(req3) > 0:
+            print("Installing required packages for Python 3")
+            cmd = "sudo pip3 install " + " ".join(req3)
+            warning(cmd)
+            result = run_cmd(cmd)
+            for package in req3:
+                if "Successfully installed " + package in result:
+                    okay("Successfully installed " + package)
+
+
+
+def install_examples(repository, directory):
+    temp = "__pimstaller__"
+    name = repository.split('/')[-1]
+
+    if not directory.endswith('/'):
+        directory += '/'
+
+    print("Installing examples from {}".format(repository))
+    
+    cmd = " && ".join(["rm -rf " + temp,
+                       "mkdir -p " + temp,
+                       "cd " + temp,
+                       "git clone --depth 1 " + repository,
+                       "mkdir -p ~/Pimoroni/" + name,
+                       "cp -r " + name + '/' + directory + "* ~/Pimoroni/" + name,
+                       "cd ../",
+                       "rm -rf " + temp])
+    #print(cmd)
+    result = run_cmd(cmd)
+    print(result)
+    okay("Find examples in ~/Pimoroni/{}".format(name))
+
+if len(sys.argv) < 2:
+    exit("You must specify a board to install...")
+
+board = sys.argv[1]
+
+url = BASE_URL + board + '.md'
+
+print("Reading {}...".format(url))
+
+f = load_yaml(url)
+
+if 'title' in f['data']:
+    okay("Installing {}".format(f['data']['title']))
+
+if 'install' not in f['data']:
+    exit("No install data available for board...")
+
+install = f['data']['install']
+if 'apt' in install:
+    install_apt_packages(install['apt'])
+if 'python' in install:
+    install_python_packages(install['python'])
+if 'examples' in install and 'github' in f['data']:
+    install_examples(f['data']['github'], install['examples'])
+okay("Done!")
