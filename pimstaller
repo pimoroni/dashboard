@@ -8,8 +8,10 @@ import yaml
 import re
 import unicodedata
 from urllib import request
+from urllib.error import HTTPError
 
-BASE_URL = "https://raw.githubusercontent.com/Gadgetoid/Pinout2/master/src/en-GB/overlay/"
+BASE_URL = "https://raw.githubusercontent.com/Gadgetoid/Pinout2/master/src/en-GB/"
+IGNORE_OVERLAYS = ["ground","spi","uart","i2c","wiringpi","arduino-spi"]
 
 FG_BLACK = 30
 FG_RED = 31
@@ -23,6 +25,19 @@ BG_BLACK = 40
 BG_RED = 41
 
 def load_yaml(file):
+    data = None
+    if file.startswith("http"):
+        try:
+            data = request.urlopen(file).read().decode()
+        except HTTPError:
+            return None
+    else:
+        data = open(file).read()
+
+    return yaml.load(data)
+
+
+def load_markyaml(file):
     '''
     Loads and parses JSON-embedded Markdown file, chopping out and
     parsing any JSON contained therein.
@@ -31,7 +46,10 @@ def load_yaml(file):
     '''
     markson = None
     if file.startswith("http"):
-        markson = request.urlopen(file).read().decode()
+        try:
+            markson = request.urlopen(file).read().decode()
+        except HTTPError:
+            return None
     else:
         markson = open(file).read()
 
@@ -67,90 +85,87 @@ def load_yaml(file):
     return {'data':_data, 'html':_html}
 
 def okay(message):
-    print_in_color(FG_GREEN,BG_BLACK,message)
+    return in_color(FG_GREEN,BG_BLACK,message)
 
 
 def warning(message):
-    print_in_color(FG_YELLOW,BG_BLACK,message)
+    return in_color(FG_YELLOW,BG_BLACK,message)
 
 
 def error(message):
-    print_in_color(FG_RED,BG_BLACK,message)
+    return in_color(FG_RED,BG_BLACK,message)
 
 
-def print_in_color(fg,bg,message):
-    print('\x1b[0;' + str(fg) + ';' + str(bg) + 'm' + message + '\x1b[0m')
+def in_color(fg, bg, message):
+    return '\x1b[0;' + str(fg) + ';' + str(bg) + 'm' + message + '\x1b[0m'
 
 
 def run_cmd(cmd):
-    return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read().decode()
+    result = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return result.stdout.read().decode(), result.stderr.read().decode()
 
 
-def pip_check(package_name):
-    cmd = "pip search " + package_name
+def pip_check(python_version, package_name):
+    cmd = "pip{} search {}".format(python_version, package_name)
     result = run_cmd(cmd)
-    return 'INSTALLED' in result
-
-
-def pip3_check(package_name):
-    cmd = "pip3 search " + package_name
-    result = run_cmd(cmd)
-    return 'INSTALLED' in result
+    return 'INSTALLED' in result[0]
 
 
 def apt_check(package_name):
     cmd = "dpkg-query -W --showformat='${Status}' " + package_name
     result = run_cmd(cmd)
-    return result == 'install ok installed'
+    return result[0] == 'install ok installed'
 
 
 def install_apt_packages(package_list):
     print("Checking for apt packages...")
+    req = []
     for package in package_list:
-        print("Checking for {}".format(package))
         if apt_check(package):
-            okay("Found!")
+            print("    {}: {}".format(package, okay("Found!")))
         else:
-            warning("Not found!")
+            print("    {}: {}".format(package, warning("Not found!")))
+            req.append(package)
 
+    if len(req) > 0:
+        print("\nInstalling apt packages...")
+        cmd = "sudo apt-get --force-yes --yes install {}".format(" ".join(req))
+        print("    " + warning(cmd))
+        result = run_cmd(cmd)
+        #print(result)
+        for package in req:
+            if "Setting up " + package in result[0]:
+                print(okay("    Successfully installed: {}".format(package)))
+            elif "Unable to locate package {}".format(package):
+                print(error("    Unable to locate: {}".format(package)))
+            else:
+                print(error("    Failed to install: {}".format(package)))
 
-def install_python_packages(package_list):
-    print("Checking for Python packages...")
-    req2 = []
-    req3 = []
+def install_python_packages(python_version, package_list, reinstall=False):
+    print("Checking for Python {} packages...".format(python_version))
+    req = []
     for package in package_list:
-        print("Checking for {}".format(package))
-
-        if pip_check(package):
-            okay("Found, Python 2!")
-        else:
-            warning("Not found, Python 2!")
-            req2.append(package)
-
-        if pip3_check(package):
-            okay("Found, Python 3!")
-        else:
-            req3.append(package)
-            warning("Not found, Python 3!")
         
-        if len(req2) > 0:
-            print("Installing required packages for Python 2")
-            cmd = "sudo pip install " + " ".join(req2)
-            warning(cmd)
+        if pip_check(python_version, package):
+            if reinstall:
+                print("    {}: {} ({})".format(package, okay("Found!"), warning("Will Reinstall")))
+                req.append(package)
+            else:
+                print("    {}: {}".format(package, okay("Found!")))
+        else:
+            print("    {}: Not found! Will install.".format(package))
+            req.append(package)
+       
+        if len(req) > 0:
+            print("\nInstalling Python {} packages...".format(python_version))
+            cmd = "sudo pip{} install {} {}".format(python_version,["","-I"][reinstall]," ".join(req))
+            print("    " + warning(cmd))
             result = run_cmd(cmd)
-            for package in req2:
-                if "Successfully installed " + package in result:
-                    okay("Successfully installed " + package)
-
-        if len(req3) > 0:
-            print("Installing required packages for Python 3")
-            cmd = "sudo pip3 install " + " ".join(req3)
-            warning(cmd)
-            result = run_cmd(cmd)
-            for package in req3:
-                if "Successfully installed " + package in result:
-                    okay("Successfully installed " + package)
-
+            for package in req:
+                if "Successfully installed {}".format(package) in result[0]:
+                    print(okay("    Successfully installed {}".format(package)))
+                else:
+                    print(error("    Failed to install {}".format(package)))
 
 
 def install_examples(repository, directory):
@@ -170,33 +185,87 @@ def install_examples(repository, directory):
                        "cp -r " + name + '/' + directory + "* ~/Pimoroni/" + name,
                        "cd ../",
                        "rm -rf " + temp])
-    #print(cmd)
+    #print(warning(cmd))
     result = run_cmd(cmd)
-    print(result)
-    okay("Find examples in ~/Pimoroni/{}".format(name))
+    #print(result)
+    print(okay("    Find examples in ~/Pimoroni/{}".format(name)))
 
-if len(sys.argv) < 2:
-    exit("You must specify a board to install...")
+def main():
+    reinstall = False
+    
+    if len(sys.argv) < 2:
+        print(error("You must specify a board to install."))
+        print("")
+        print("Valid boards:")
+        f = load_yaml(BASE_URL + "settings.yaml")
+        for board in f["overlays"]:
+            if not board in IGNORE_OVERLAYS:
+                print(board)
+        exit(2)
 
-board = sys.argv[1]
+    board = sys.argv[1]
 
-url = BASE_URL + board + '.md'
+    reinstall = '--reinstall' in sys.argv
 
-print("Reading {}...".format(url))
+    url = BASE_URL + "overlay/" + board + '.md'
 
-f = load_yaml(url)
+    print("Reading {}".format(url))
+    print("")
 
-if 'title' in f['data']:
-    okay("Installing {}".format(f['data']['title']))
+    f = load_markyaml(url)
 
-if 'install' not in f['data']:
-    exit("No install data available for board...")
+    if f is None:
+        print(error("Unable to locate board!"))
+        exit(1)
 
-install = f['data']['install']
-if 'apt' in install:
-    install_apt_packages(install['apt'])
-if 'python' in install:
-    install_python_packages(install['python'])
-if 'examples' in install and 'github' in f['data']:
-    install_examples(f['data']['github'], install['examples'])
-okay("Done!")
+    if 'title' in f['data']:
+        print(okay("Found board {}".format(f['data']['title'])))
+
+    for tag in ['description','manufacturer','github','url']:
+        if tag in f['data']:
+            print("    {}: {}".format(tag.capitalize(), f['data'][tag]))
+
+    print("")
+
+    if 'install' not in f['data']:
+        print(error("No install data available for board: {}.".format(f['data']['title'])))
+        exit(1)
+
+    print(okay("Install data found. Installing..."))
+
+    install = f['data']['install']
+
+    apt_req = []
+    if 'apt' in install:
+        apt_req = install['apt']
+
+    if 'python' in install and 'python-pip' not in install['apt']:
+        apt_req.append('python-pip')
+        
+    if 'python3' in install and 'python3-pip' not in install['apt']:
+        apt_req.append('python3-pip')
+
+    if len(apt_req):  
+        install_apt_packages(apt_req)
+        print("")
+
+    if 'python' in install:
+        install_python_packages(2,install['python'],reinstall)
+        print("")
+        
+    if 'python3' in install:
+        install_python_packages(3,install['python3'],reinstall)
+        print("")
+
+    if 'examples' in install and 'github' in f['data']:
+        install_examples(f['data']['github'], install['examples'])
+        print("")
+
+    print(okay("Done!"))
+    exit(0)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        exit(1)
