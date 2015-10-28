@@ -25,3 +25,7 @@ If you need to reinstall the Python libraries, you can use:
 ```bash
 ./pimstaller board_name --reinstall
 ```
+
+#Adding your boards
+
+Board files are retrieved from GitHub: https://github.com/gadgetoid/Pinout2
