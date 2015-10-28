@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import subprocess
 import os
 import sys
@@ -13,6 +12,9 @@ from urllib.error import HTTPError
 
 BASE_URL = "https://raw.githubusercontent.com/Gadgetoid/Pinout2/master/src/en-GB/"
 IGNORE_OVERLAYS = ["ground","spi","uart","i2c","wiringpi","arduino-spi"]
+
+VERSION_MAJOR = "1"
+VERSION_MINOR = "0"
 
 FG_BLACK = 30
 FG_RED = 31
@@ -270,6 +272,11 @@ def main():
     exit(0)
 
 if __name__ == "__main__":
+    print("""Welcome to Pimstaller, a Raspberry Pi add-on installer.
+Version {}.{}
+Created by Pimoroni, contribute at http://github.com/pimoroni/pimstaller
+""".format(VERSION_MAJOR, VERSION_MINOR))
+
     try:
         main()
     except KeyboardInterrupt:
