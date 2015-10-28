@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import subprocess
+import os
 import sys
 import json
 import markdown
@@ -207,7 +208,11 @@ def main():
 
     reinstall = '--reinstall' in sys.argv
 
-    url = BASE_URL + "overlay/" + board + '.md'
+    if os.path.isfile(board + '.yaml'):
+        url = board + '.yaml'
+        print(warning("Using local file!"))
+    else:
+        url = BASE_URL + "overlay/" + board + '.md'
 
     print("Reading {}".format(url))
     print("")
