@@ -4,16 +4,24 @@ A Python-based library and example installer for Raspberry Pi add-on boards.
 
 #How to use
 
-Just type:
+Install pimstaller by running:
 
 ```bash
-./pimstaller
+./install.sh
+```
+
+This will link it, so keep this directory handy.
+
+Now, just type:
+
+```bash
+pimstaller
 ```
 
 To see a list of available boards. And:
 
 ```bash
-./pimstaller board_name
+pimstaller board_name
 ```
 
 To install!
@@ -23,8 +31,18 @@ To install!
 If you need to reinstall the Python libraries, you can use:
 
 ```bash
-./pimstaller board_name --reinstall
+pimstaller board_name --reinstall
 ```
+
+#Updating pimstaller
+
+Just run:
+
+```bash
+./update.sh
+```
+
+In the directory you cloned Pimstaller to.
 
 #Adding your boards
 
