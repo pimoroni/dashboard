@@ -243,64 +243,7 @@ whip_size() {
     WT_MENU_HEIGHT=$(($WT_HEIGHT-8))
 }
 
-pim_install() {
-    if [ ! -f $DESKTOP_FILE ]; then
-        if whip_confirm "Do you want to add Pimstaller to your desktop?"; then
-            export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
-            curl -sS get.pimoroni.com/pimoroni-dashboard.png >> $TMPDIR/pimstaller.png
-            curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
-            sudo cp $TMPDIR/pimstaller.png $DESKTOP_ICON
-            sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
-            sudo chmod +x $DASHBOARD_SCRIPT
-            sudo gtk-update-icon-cache
-            echo "\
-[Desktop Entry]
-Encoding=UTF-8
-Name=Pimstaller
-GenericName=Pimstaller
-Comment=Manage software for Pimoroni products
-TryExec=lxterminal
-Exec=lxterminal --command $DASHBOARD_SCRIPT
-Icon=$DESKTOP_ICON
-Type=Application
-Categories=Utility;\
-" >> $TMPDIR/pimstaller.desktop
-
-            sudo desktop-file-install $TMPDIR/pimstaller.desktop
-            cp $DESKTOP_APP_FILE $DESKTOP_FILE
-            rm -rf $TMPDIR
-
-            rm -rf $TMPDIR
-        fi
-    fi
-}
-
-pim_uninstall() {
-    sudo rm $DASHBOARD_SCRIPT
-    sudo rm $DESKTOP_ICON
-    sudo rm $DESKTOP_FILE
-    sudo rm $DESKTOP_APP_FILE
-    whip_msgbox "Pimstaller uninstalled!"
-}
-
-pim_update() {
-    if check_network && [ -f $DESKTOP_FILE ]; then
-        if [[ $1 == 'noupdate' ]]; then
-            return
-        fi
-        echo "Updating..."
-        export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
-        curl -sS get.pimoroni.com/pimoroni-dashboard.png >> $TMPDIR/pimstaller.png
-        curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
-        sudo cp $TMPDIR/pimstaller.png $DESKTOP_ICON
-        sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
-        rm -rf $TMPDIR
-        pimstaller noupdate
-        exit 0
-    fi
-}
-
-pim_menu() {
+whip_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
@@ -410,13 +353,5 @@ if [ $forcesudo == "yes" ]; then
     sudocheck
 fi
 
-if [[ $1 == 'install' ]]; then
-    pim_install
-elif [[ $1 == 'uninstall' ]]; then
-    pim_uninstall
-elif [[ $1 == 'update' ]]; then
-    pim_update
-else
-    about_msg
-    pim_menu
-fi
+about_msg
+whip_menu
