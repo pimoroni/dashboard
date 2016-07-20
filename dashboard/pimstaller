@@ -250,7 +250,7 @@ whip_size() {
     if [ "$WT_WIDTH" -gt 178 ]; then
         WT_WIDTH=120
     fi
-    WT_MENU_HEIGHT=$(($WT_HEIGHT-8))
+    WT_MENU_HEIGHT=$(($WT_HEIGHT-7))
 }
 
 : <<'MAINSTART'
@@ -350,7 +350,7 @@ check_examples() {
 }
 
 check_software() {
-    if [ -d $WORKING_DIR/$1 ]; then
+    if apt_pkg_req python-$1 ; then
         return 1
     else
         return 0
@@ -362,8 +362,8 @@ whip_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "$(check_doc displayotron)" \
-    "2 Drum HAT" "$(check_examples drumhat)" \
+    "1 Display-o-Tron 3000/HAT" "displayotron" \
+    "2 Drum HAT" "drumhat" \
     "3 Explorer HAT" "explorerhat" \
     "4 Piano HAT" "pianohat" \
     "5 Pibrella" "pibrella" \
