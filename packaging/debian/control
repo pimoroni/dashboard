@@ -1,0 +1,17 @@
+Source: pimstaller
+Section: utils
+Priority: extra
+Maintainer: Phil Howard <phil@pimoroni.com>
+Homepage: https://github.com/pimoroni/pimstaller
+Build-Depends: debhelper (>= 9.0.0)
+Standards-Version: 3.9.6
+Vcs-Git: git://git@github.com:pimoroni/pimstaller.git
+Vcs-Browser: https://github.com/pimoroni/pimstaller
+
+Package: pimstaller
+Architecture: all
+Depends: ${misc:Depends}, curl, scrot, whiptail
+Description: Pimstaller is the comprehensive Pimoroni products installer
+ Pimstaller is a setup dashboard for Pimoroni add-on boards. It provides
+ a familiar GUI for installing product support software, documentation
+ and examples.
