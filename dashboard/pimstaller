@@ -338,7 +338,7 @@ for board in ${listhat[@]}; do
     if apt_pkg_req "python-$board"; then
         $board="Installed"
     else
-        $board="\> Install"
+        $board="Install"
     fi
 done
             
