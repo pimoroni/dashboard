@@ -233,6 +233,21 @@ take_snap() {
     fi
 }
 
+self_update() {
+    if check_network; then
+        if [[ $1 == 'noupdate' ]]; then
+            return
+        fi
+        echo "Updating..."
+        export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
+        curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
+        sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
+        rm -rf $TMPDIR
+        pimstaller noupdate
+        exit 0
+    fi
+}
+
 whip_confirm() {
     whiptail --yesno "$1" $WT_HEIGHT $(($WT_WIDTH-20))
 }
@@ -252,13 +267,6 @@ whip_size() {
     fi
     WT_MENU_HEIGHT=$(($WT_HEIGHT-7))
 }
-
-: <<'MAINSTART'
-
-Perform all global variables declarations as well as function definition
-above this section for clarity, thanks!
-
-MAINSTART
 
 arch_check
 os_check
@@ -317,6 +325,8 @@ if [ $forcesudo == "yes" ]; then
     sudocheck
 fi
 
+#self_update $1
+
 about_msg() {
     whip_msgbox "\
     This handy tool will help you get started with Pimoroni products. Simply pick the add-on board you want to set up from the list, hit select and we'll walk you through the install process in a few easy steps.
@@ -327,11 +337,6 @@ about_msg() {
 "
 }
 about_msg
-
-listhat=( displayotron drumhat explorerhat pianohat skywriter unicornhat )
-listphat=( scrollphat )
-listother=( pibrella piglow )
-listools=( i2c spi )
 
 check_doc() {
     if [ -d $WORKING_DIR/$1/doc ]; then
@@ -357,15 +362,14 @@ check_software() {
     fi
 }
 
-
 main_menu() {
     MAIN=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-            "1 my product is a HAT" "" \
-            "2 my product is a pHAT" "" \
-            "3 my product is something else" "" \
-            "4 I have a problem" "" \
+            "1 my Pimoroni product is a" "HAT" \
+            "2 my Pimoroni product is a" "pHAT" \
+            "3 my Pimoroni product is something" "ELSE" \
+            "4 I have a problem, I need" "HELP" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -386,12 +390,12 @@ hat_menu() {
     HAT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-            "1 Display-o-Tron 3000/HAT" "displayotron" \
-            "2 Drum HAT" "drumhat" \
-            "3 Explorer HAT" "explorerhat" \
-            "4 Piano HAT" "pianohat" \
-            "5 Skywriter HAT" "skywriter" \
-            "6 Unicorn HAT" "unicornhat" \
+            "1 Display-o-Tron HAT" "import dot3k" \
+            "2 Drum HAT" "import drumhat" \
+            "3 Explorer HAT" "import explorerhat" \
+            "4 Piano HAT" "import pianohat" \
+            "5 Skywriter HAT" "import skywriter" \
+            "6 Unicorn HAT" "import unicornhat" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -411,9 +415,15 @@ hat_menu() {
 }
 phat_menu() {
     PHAT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
-    --cancel-button Quit \
+    --cancel-button Back \
     --ok-button Select \
-            "1 Scroll pHAT" "scrollphat" \
+            "1 Enviro pHAT" "import envirophat" \
+            "2 ESP IoT pHAT" "firmware scripts" \
+            "3 Explorer pHAT" "import explorerhat" \
+            "4 Micro Dot pHAT" "import microdotphat" \
+            "5 pHAT DAC" "setup DAC and audio tests" \
+            "6 Scroll pHAT" "import scrollphat" \
+            "7 Unicorn pHAT" "import unicornhat" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -421,7 +431,13 @@ phat_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$PHAT" in
-            1\ *) get_install scrollphat ;;
+            1\ *) get_install envirophat ;;
+            2\ *) get_install iotphat ;;
+            3\ *) get_install explorerhat ;;
+            4\ *) get_install microdotphat ;;
+            5\ *) get_install phatdac ;;
+            6\ *) get_install scrollphat ;;
+            7\ *) get_install unicornhat ;;
             *) pim_msgbox "Error: unrecognized option";;
         esac ||pim_msgbox "There was an error running option $PHAT"
     fi
@@ -429,10 +445,14 @@ phat_menu() {
 
 pim_menu() {
     PIM=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
-    --cancel-button Quit \
+    --cancel-button Back \
     --ok-button Select \
-            "1 Pibrella" "pibrella" \
-            "2 Piglow" "piglow" \
+            "1 Blinkt!" "import blinkt" \
+            "2 Display-o-Tron 3000" "import dot3k" \
+            "3 Flotilla (with Rockpool)" "import flotilla" \
+            "4 Pibrella" "import pibrella" \
+            "5 Piglow" "import piglow" \
+            "6 Skywriter board" "import skywriter" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -440,8 +460,12 @@ pim_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$PIM" in
-            1\ *) get_install pibrella ;;
-            2\ *) get_install piglow ;;
+            1\ *) get_install blinkt ;;
+            2\ *) get_install dot3k ;;
+            3\ *) get_install rockpool ;;
+            4\ *) get_install pibrella ;;
+            5\ *) get_install piglow ;;
+            6\ *) get_install skywriter ;;
             *) pim_msgbox "Error: unrecognized option";;
         esac ||pim_msgbox "There was an error running option $PIM"
     fi
@@ -449,9 +473,12 @@ pim_menu() {
 
 util_menu() {
     UTIL=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
-    --cancel-button Quit \
+    --cancel-button Back \
     --ok-button Select \
-            "0 Take Screenshot" "Useful to help solve a problem" \
+            "1 Hardware Info" "Gather hardware and software info" \
+            "2 Upgrade my Software" "This will update all your software" \
+            "3 Take Screenshot" "Useful to help solve a problem" \
+            "4 Update Product List" "Retrieve info for new products" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -459,7 +486,10 @@ util_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$UTIL" in
-            0\ *) pim_screenshot ;;
+            1\ *) get_install cpuinfo ;;
+            2\ *) get_install uptodate ;;
+            3\ *) pim_screenshot ;;
+            4\ *) self_update ;;
             *) pim_msgbox "Error: unrecognized option";;
         esac ||pim_msgbox "There was an error running option $UTIL"
     fi
