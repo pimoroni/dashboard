@@ -348,7 +348,7 @@ whip_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "$(apt_pkg_check displayotron)" \
+    "1 Display-o-Tron 3000/HAT" "$(apt_pkg_req python-displayotron)" \
     "2 Drum HAT" "drumhat" \
     "3 Explorer HAT" "explorerhat" \
     "4 Piano HAT" "pianohat" \
