@@ -327,7 +327,7 @@ whip_menu() {
     "6 PiGlow" "Documentation & examples" \
     "7 Scroll pHAT" "Documentation & examples" \
     "8 Skywriter HAT" "Documentation & examples" \
-    "9 Unicorn HAT" "https://shop.pimoroni.com/products/unicorn-phat" \
+    "9 Unicorn HAT" "shop.pimoroni.com/products/unicorn-phat" \
     "0 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
     
