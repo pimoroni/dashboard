@@ -321,15 +321,15 @@ pim_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$FUNCTION" in
-            1\ *) pim_net_install displayotron ;;
-            2\ *) pim_net_install drumhat ;;
-            3\ *) pim_net_install explorerhat ;;
-            4\ *) pim_net_install pianohat ;;
-            5\ *) pim_net_install pibrella ;;
-            6\ *) pim_net_install piglow ;;
-            7\ *) pim_net_install scrollphat ;;
-            8\ *) pim_net_install skywriter ;;
-            9\ *) pim_net_install unicornhat ;;
+            1\ *) get_install displayotron ;;
+            2\ *) get_install drumhat ;;
+            3\ *) get_install explorerhat ;;
+            4\ *) get_install pianohat ;;
+            5\ *) get_install pibrella ;;
+            6\ *) get_install piglow ;;
+            7\ *) get_install scrollphat ;;
+            8\ *) get_install skywriter ;;
+            9\ *) get_install unicornhat ;;
             0\ *) pim_screenshot ;;
             *) pim_msgbox "Error: unrecognized option";;
         esac ||pim_msgbox "There was an error running option $FUNCTION"
@@ -352,32 +352,6 @@ Perform all global variables declarations as well as function definition
 above this section for clarity, thanks!
 
 MAINSTART
-
-
-pim_check_network() {
-    sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` > /dev/null && return 0 || return 1
-}
-
-# Runs the relevant net install script and then returns to the menu
-pim_net_install() {
-    pim_check_network || (pim_msgbox "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-
-    \curl -sS get.pimoroni.com/$1 | bash
-
-    read -p "Press [Enter] key to continue..." < /dev/tty
-
-    pim_menu
-}
-
-
-
-
-
-
-
-
-
-
 
 arch_check
 os_check
