@@ -335,25 +335,25 @@ listools=( i2c spi )
 
 check_doc() {
     if [ -d $WORKING_DIR/$1/doc ]; then
-        true
+        return 1
     else
-        false
+        return 0
     fi
 }
 
 check_examples() {
     if [ -d $WORKING_DIR/$1/examples ]; then
-        true
+        return 1
     else
-        false
+        return 0
     fi
 }
 
 check_software() {
     if [ -d $WORKING_DIR/$1 ]; then
-        true
+        return 1
     else
-        false
+        return 0
     fi
 }
 
