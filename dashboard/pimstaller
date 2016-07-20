@@ -335,30 +335,32 @@ listother=( pibrella piglow )
 listools=( i2c spi )
 
 for board in ${listhat[@]}; do
-    if apt_pkg_req "python-$board"; then
-        board="Installed"
-        export $board
-        echo $board
+    
+    
+apt_pkg_check() {
+    if apt_pkg_req "python-$1"; then
+        status="Installed"
+        return $status
     else
-        board="Install"
-        export $board
-        echo $board
+        status="Install"
+        return $status
     fi
-done
-            
+}          
+
+
 whip_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "$displayotron" \
-    "2 Drum HAT" "$drumhat" \
-    "3 Explorer HAT" "$explorerhat" \
-    "4 Piano HAT" "$pianohat" \
-    "5 Pibrella" "$pibrella" \
-    "6 PiGlow" "$piglow" \
-    "7 Scroll pHAT" "$scrollphat" \
-    "8 Skywriter HAT" "$skywriter" \
-    "9 Unicorn HAT" "$unicornhat" \
+    "1 Display-o-Tron 3000/HAT" "$(apt_pkg_check displayotron)" \
+    "2 Drum HAT" "drumhat" \
+    "3 Explorer HAT" "explorerhat" \
+    "4 Piano HAT" "pianohat" \
+    "5 Pibrella" "pibrella" \
+    "6 PiGlow" "piglow" \
+    "7 Scroll pHAT" "scrollphat" \
+    "8 Skywriter HAT" "skywriter" \
+    "9 Unicorn HAT" "unicornhat" \
     "0 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
     
