@@ -315,11 +315,15 @@ Enjoy
 - The Pimoroni Crew\
 "
 
+software="software"
+documentation="documentation"
+examples="examples"
+
 whip_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "Documentation & examples" \
+    "1 Display-o-Tron 3000/HAT" "$software $documentation $examples" \
     "2 Drum HAT" "Documentation & examples" \
     "3 Explorer HAT" "Documentation & examples" \
     "4 Piano HAT" "Documentation & examples" \
