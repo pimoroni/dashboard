@@ -336,9 +336,9 @@ listools=( "i2c" "spi" )
 
 for board in ${listhat[@]}; do
     if apt_pkg_req "python-$board"; then
-        board="Installed"
+        export board="Installed"
     else
-        board="Install"
+        export board="Install"
     fi
 done
             
@@ -349,7 +349,7 @@ whip_menu() {
     "1 Display-o-Tron 3000/HAT" "$displayotron" \
     "2 Drum HAT" "$drumhat" \
     "3 Explorer HAT" "$explorerhat" \
-    "4 Piano HAT" "$ $pianohat" \
+    "4 Piano HAT" "$pianohat" \
     "5 Pibrella" "$pibrella" \
     "6 PiGlow" "$piglow" \
     "7 Scroll pHAT" "$scrollphat" \
