@@ -329,10 +329,10 @@ about_msg() {
 about_msg
 
 
-listhat=( "displayotron" "drumhat" "explorerhat" "pianohat" "skywriter" "unicornhat" )
-listphat=( "scrollphat" )
-listother=( "pibrella" "piglow" )
-listools=( "i2c" "spi" )
+listhat=( displayotron drumhat explorerhat pianohat skywriter unicornhat )
+listphat=( scrollphat )
+listother=( pibrella piglow )
+listools=( i2c spi )
 
 for board in ${listhat[@]}; do
     if apt_pkg_req "python-$board"; then
