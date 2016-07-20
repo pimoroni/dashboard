@@ -315,36 +315,42 @@ Enjoy
 - The Pimoroni Crew\
 "
 
-FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
---cancel-button Quit \
---ok-button Select \
-"1 Display-o-Tron 3000/HAT" "Install software & examples" \
-"2 Drum HAT" "Install software & examples" \
-"3 Explorer HAT" "Install software & examples" \
-"4 Piano HAT" "Install software & examples" \
-"5 Pibrella" "Install software & examples" \
-"6 PiGlow" "Install software & examples" \
-"7 Scroll pHAT" "Install software & examples" \
-"8 Skywriter HAT" "Install software & examples" \
-"9 Unicorn HAT" "Install software & examples" \
-"0 Take Screenshot" "Useful to help solve a problem" \
-3>&1 1>&2 2>&3)
+whip_menu() {
+    FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
+    --cancel-button Quit \
+    --ok-button Select \
+    "1 Display-o-Tron 3000/HAT" "Install software & examples" \
+    "2 Drum HAT" "Install software & examples" \
+    "3 Explorer HAT" "Install software & examples" \
+    "4 Piano HAT" "Install software & examples" \
+    "5 Pibrella" "Install software & examples" \
+    "6 PiGlow" "Install software & examples" \
+    "7 Scroll pHAT" "Install software & examples" \
+    "8 Skywriter HAT" "Install software & examples" \
+    "9 Unicorn HAT" "Install software & examples" \
+    "0 Take Screenshot" "Useful to help solve a problem" \
+    3>&1 1>&2 2>&3)
+    
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$FUNCTION" in
+            1\ *) get_install displayotron ;;
+            2\ *) get_install drumhat ;;
+            3\ *) get_install explorerhat ;;
+            4\ *) get_install pianohat ;;
+            5\ *) get_install pibrella ;;
+            6\ *) get_install piglow ;;
+            7\ *) get_install scrollphat ;;
+            8\ *) get_install skywriter ;;
+            9\ *) get_install unicornhat ;;
+            0\ *) pim_screenshot ;;
+            *) pim_msgbox "Error: unrecognized option";;
+        esac ||pim_msgbox "There was an error running option $FUNCTION"
+    fi
+}
 
-RETURN=$?
-if [ $RETURN -eq 1 ]; then
-    return 0
-elif [ $RETURN -eq 0 ]; then
-    case "$FUNCTION" in
-        1\ *) get_install displayotron ;;
-        2\ *) get_install drumhat ;;
-        3\ *) get_install explorerhat ;;
-        4\ *) get_install pianohat ;;
-        5\ *) get_install pibrella ;;
-        6\ *) get_install piglow ;;
-        7\ *) get_install scrollphat ;;
-        8\ *) get_install skywriter ;;
-        9\ *) get_install unicornhat ;;
-        0\ *) pim_screenshot ;;
-        *) pim_msgbox "Error: unrecognized option";;
-    esac ||pim_msgbox "There was an error running option $FUNCTION"
-fi
+whip_menu
+
+exit 0
