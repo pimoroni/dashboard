@@ -334,7 +334,7 @@ listother=( pibrella piglow )
 listools=( i2c spi )
 
 check_doc() {
-    if [ -d $WORKING_DIR/$1 ]; then
+    if [ -d $WORKING_DIR/$1/doc ]; then
         true
     else
         false
@@ -342,7 +342,7 @@ check_doc() {
 }
 
 check_examples() {
-    if [ -d $WORKING_DIR/$1 ]; then
+    if [ -d $WORKING_DIR/$1/examples ]; then
         true
     else
         false
