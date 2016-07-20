@@ -320,36 +320,38 @@ fi
 about_msg() {
     whip_msgbox "\
     This handy tool will help you get started with Pimoroni products. Simply pick the add-on board you want to set up from the list, hit select and we'll walk you through the install process in a few easy steps.
-    
+
     Enjoy
-    
+
     - The Pimoroni Crew\
 "
 }
 about_msg
 
-
 listhat=( displayotron drumhat explorerhat pianohat skywriter unicornhat )
 listphat=( scrollphat )
 listother=( pibrella piglow )
 listools=( i2c spi )
-    
-apt_pkg_check() {
-    if apt_pkg_req "python-$1"; then
-        return 1
-    else
-        status="Install"
-        return 0
-    fi
-}          
+
+check_doc() {
+    if [ -d $WORKING_DIR/$1 ]
+}
+
+check_examples() {
+    if [ -d $WORKING_DIR/$1 ]    
+}
+
+check_software() {
+    if [ -d $WORKING_DIR/$1 ]
+}
 
 
 whip_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "$(apt_pkg_req python-displayotron)" \
-    "2 Drum HAT" "drumhat" \
+    "1 Display-o-Tron 3000/HAT" "$(check_doc displayotron)" \
+    "2 Drum HAT" "$(check_examples drumhat)" \
     "3 Explorer HAT" "explorerhat" \
     "4 Piano HAT" "pianohat" \
     "5 Pibrella" "pibrella" \
@@ -359,7 +361,7 @@ whip_menu() {
     "9 Unicorn HAT" "unicornhat" \
     "0 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
-    
+
     RETURN=$?
     if [ $RETURN -eq 1 ]; then
         return 0
