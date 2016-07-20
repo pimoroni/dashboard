@@ -334,15 +334,27 @@ listother=( pibrella piglow )
 listools=( i2c spi )
 
 check_doc() {
-    if [ -d $WORKING_DIR/$1 ]
+    if [ -d $WORKING_DIR/$1 ]; then
+        true
+    else
+        false
+    fi
 }
 
 check_examples() {
-    if [ -d $WORKING_DIR/$1 ]    
+    if [ -d $WORKING_DIR/$1 ]; then
+        true
+    else
+        false
+    fi
 }
 
 check_software() {
-    if [ -d $WORKING_DIR/$1 ]
+    if [ -d $WORKING_DIR/$1 ]; then
+        true
+    else
+        false
+    fi
 }
 
 
