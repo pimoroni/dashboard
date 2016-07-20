@@ -251,9 +251,11 @@ cd $WORKING_DIR
 
 if [[ $1 == 'uninstall' ]]; then
     pim_uninstall
-else
+elif [[ $1 == 'update' ]]; then
     pim_update $1
+elif [[ $1 == 'install' ]]; then
+    pim_install    
+else
     pim_about # Display Splash
     pim_menu  # Display Menu
-    pim_install
 fi
