@@ -174,6 +174,16 @@ check_network() {
     sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` > /dev/null && return 0 || return 1
 }
 
+apt_pkg_req() {
+    APT_CHK=$(dpkg-query -W -f='${Status}\n' $1 2> /dev/null | grep "install ok installed")
+
+    if [ "" == "$APT_CHK" ]; then
+        true
+    else
+        false
+    fi
+}
+
 get_install() {
     check_network || (whip_msgbox "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
 
@@ -307,31 +317,44 @@ if [ $forcesudo == "yes" ]; then
     sudocheck
 fi
 
-whip_msgbox "\
-This handy tool will help you get started with Pimoroni products. Simply pick the add-on board you want to install software for from the list, hit select and we'll walk you through the install process in a few easy steps.
-
-Enjoy
-
-- The Pimoroni Crew\
+about_msg() {
+    whip_msgbox "\
+    This handy tool will help you get started with Pimoroni products. Simply pick the add-on board you want to set up from the list, hit select and we'll walk you through the install process in a few easy steps.
+    
+    Enjoy
+    
+    - The Pimoroni Crew\
 "
+}
+about_msg
 
-software="software"
-documentation="documentation"
-examples="examples"
 
+listhat=( "displayotron" "drumhat" "explorerhat" "pianohat" "skywriter" "unicornhat" )
+listphat=( "scrollphat" )
+listother=( "pibrella" "piglow" )
+listools=( "i2c" "spi" )
+
+for board in ${listhat[@]}; do
+    if apt_pkg_req "python-$board"; then
+        $board="Installed"
+    else
+        $board="> Install"
+    fi
+done
+            
 whip_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "$software $documentation $examples" \
-    "2 Drum HAT" "Documentation & examples" \
-    "3 Explorer HAT" "Documentation & examples" \
-    "4 Piano HAT" "Documentation & examples" \
-    "5 Pibrella" "Documentation & examples" \
-    "6 PiGlow" "Documentation & examples" \
-    "7 Scroll pHAT" "Documentation & examples" \
-    "8 Skywriter HAT" "Documentation & examples" \
-    "9 Unicorn HAT" "shop.pimoroni.com/products/unicorn-phat" \
+    "1 Display-o-Tron 3000/HAT" "$displayotron" \
+    "2 Drum HAT" "$drumhat" \
+    "3 Explorer HAT" "$explorerhat" \
+    "4 Piano HAT" "$ $pianohat" \
+    "5 Pibrella" "$pibrella" \
+    "6 PiGlow" "$piglow" \
+    "7 Scroll pHAT" "$scrollphat" \
+    "8 Skywriter HAT" "$skywriter" \
+    "9 Unicorn HAT" "$unicornhat" \
     "0 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
     
