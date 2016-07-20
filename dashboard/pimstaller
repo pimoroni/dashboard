@@ -410,11 +410,13 @@ if [ $forcesudo == "yes" ]; then
     sudocheck
 fi
 
-if [[ $1 == 'uninstall' ]]; then
+if [[ $1 == 'install' ]]; then
+    pim_install
+elif [[ $1 == 'uninstall' ]]; then
     pim_uninstall
+elif [[ $1 == 'update' ]]; then
+    pim_update
 else
-    pim_update $1
     about_msg
     pim_menu
-    pim_install
 fi
