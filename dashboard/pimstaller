@@ -304,21 +304,21 @@ pim_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "01 Blinkt!" "Install software & examples" \
-    "02 Display-o-Tron 3000/HAT" "Install software & examples" \
-    "03 Drum HAT" "Install software & examples" \
-    "04 Enviro pHAT" "Install software & examples" \
-    "05 Explorer HAT/pHAT" "Install software & examples" \
-    "06 ESP IoT pHAT" "Install software & examples" \
-    "07 Micro Dot pHAT" "Install software & examples" \
-    "08 pHAT DAC" "Install software & examples" \
-    "09 Piano HAT" "Install software & examples" \
-    "10 Pibrella" "Install software & examples" \
+    "1 Blinkt!" "Install software & examples" \
+    "2 Display-o-Tron 3000/HAT" "Install software & examples" \
+    "3 Drum HAT" "Install software & examples" \
+    "4 Enviro pHAT" "Install software & examples" \
+    "5 Explorer HAT/pHAT" "Install software & examples" \
+    "6 ESP IoT pHAT" "Install software & examples" \
+    "7 Micro Dot pHAT" "Install software & examples" \
+    "8 pHAT DAC" "Install software & examples" \
+    "9 Piano HAT" "Install software & examples" \
+#    "10 Pibrella" "Install software & examples" \
 #    "11 PiGlow" "Install software & examples" \
 #    "12 Scroll pHAT" "Install software & examples" \
 #    "13 Skywriter HAT" "Install software & examples" \
 #    "14 Unicorn HAT/pHAT" "Install software & examples" \
-#    "99 Take Screenshot" "Useful to help solve a problem" \
+    "0 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -326,21 +326,21 @@ pim_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$FUNCTION" in
-            01\ *) get_install blinkt ;;
-            02\ *) get_install displayotron ;;
-            03\ *) get_install drumhat ;;
-            04\ *) get_install envirophat ;;
-            05\ *) get_install explorerhat ;;
-            06\ *) get_install iotphat ;;
-            07\ *) get_install microdotphat ;;
-            08\ *) get_install phatdac ;;
-            09\ *) get_install pianohat ;;
-            10\ *) get_install pibrella ;;
+            1\ *) get_install blinkt ;;
+            2\ *) get_install displayotron ;;
+            3\ *) get_install drumhat ;;
+            4\ *) get_install envirophat ;;
+            5\ *) get_install explorerhat ;;
+            6\ *) get_install iotphat ;;
+            7\ *) get_install microdotphat ;;
+            8\ *) get_install phatdac ;;
+            9\ *) get_install pianohat ;;
+#            10\ *) get_install pibrella ;;
 #            11\ *) get_install piglow ;;
 #            12\ *) get_install scrollphat ;;
 #            13\ *) get_install skywriter ;;
 #            14\ *) get_install unicornhat ;;
-#            99\ *) take_snap ;;
+            0\ *) take_snap ;;
             *) whip_msgbox "Error: unrecognized option";;
         esac ||whip_msgbox "There was an error running option $FUNCTION"
     fi
