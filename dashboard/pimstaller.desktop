@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Pimstaller
+GenericName=Pimstaller
+Comment=Manage software for Pimoroni products
+TryExec=lxterminal
+Exec=lxterminal --command /usr/bin/pimstaller
+Icon=/usr/share/pixmaps/picon.png
+Type=Application
+Categories=Utility;

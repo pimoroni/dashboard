@@ -11,10 +11,10 @@ else
     USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
 fi
 WORKING_DIR=$USER_HOME/Pimoroni
-DESKTOP_FILE="$USER_HOME/Desktop/pimoroni-dashboard.desktop"
-DESKTOP_APP_FILE="/usr/share/applications/pimoroni-dashboard.desktop"
-DESKTOP_ICON="/usr/share/pixmaps/pimoroni-dashboard.png"
-DASHBOARD_SCRIPT="/usr/bin/pimoroni-dashboard"
+DESKTOP_FILE="$USER_HOME/Desktop/pimstaller.desktop"
+DESKTOP_APP_FILE="/usr/share/applications/pimstaller.desktop"
+DESKTOP_ICON="/usr/share/pixmaps/pimstaller.png"
+DASHBOARD_SCRIPT="/usr/bin/pimstaller"
 
 WT_HEIGHT=17
 WT_WIDTH=$(tput cols)
@@ -105,33 +105,33 @@ pim_uninstall() {
     sudo rm $DESKTOP_ICON
     sudo rm $DESKTOP_FILE
     sudo rm $DESKTOP_APP_FILE
-    pim_msgbox "Pimoroni Dashboard uninstalled!"
+    pim_msgbox "Pimstaller uninstalled!"
 }
 
 pim_install() {
     if [ ! -f $DESKTOP_FILE ]; then
-        if pim_yesno "Do you want to add the Pimoroni Dashboard to your desktop?"; then
+        if pim_yesno "Do you want to add Pimstaller to your desktop?"; then
             export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
-            curl -sSL get.pimoroni.com/pimoroni-dashboard.png >> $TMPDIR/pimoroni-dashboard.png
-            curl -sSL get.pimoroni.com/dash >> $TMPDIR/dash
-            sudo cp $TMPDIR/pimoroni-dashboard.png $DESKTOP_ICON
-            sudo cp $TMPDIR/dash $DASHBOARD_SCRIPT
+            curl -sS get.pimoroni.com/pimoroni-dashboard.png >> $TMPDIR/pimstaller.png
+            curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
+            sudo cp $TMPDIR/pimstaller.png $DESKTOP_ICON
+            sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
             sudo chmod +x $DASHBOARD_SCRIPT
             sudo gtk-update-icon-cache
             echo "\
 [Desktop Entry]
 Encoding=UTF-8
-Name=Pimoroni Dash
-GenericName=Pimoroni Dash
+Name=Pimstaller
+GenericName=Pimstaller
 Comment=Manage software for Pimoroni products
 TryExec=lxterminal
 Exec=lxterminal --command $DASHBOARD_SCRIPT
 Icon=$DESKTOP_ICON
 Type=Application
 Categories=Utility;\
-" >> $TMPDIR/pimoroni-dashboard.desktop
+" >> $TMPDIR/pimstaller.desktop
 
-            sudo desktop-file-install $TMPDIR/pimoroni-dashboard.desktop
+            sudo desktop-file-install $TMPDIR/pimstaller.desktop
             cp $DESKTOP_APP_FILE $DESKTOP_FILE
             rm -rf $TMPDIR
 
@@ -147,12 +147,12 @@ pim_update() {
         fi
         echo "Updating..."
         export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
-        curl -sSL get.pimoroni.com/pimoroni-dashboard.png >> $TMPDIR/pimoroni-dashboard.png
-        curl -sSL get.pimoroni.com/dash >> $TMPDIR/dash
-        sudo cp $TMPDIR/pimoroni-dashboard.png $DESKTOP_ICON
-        sudo cp $TMPDIR/dash $DASHBOARD_SCRIPT
+        curl -sS get.pimoroni.com/pimoroni-dashboard.png >> $TMPDIR/pimstaller.png
+        curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
+        sudo cp $TMPDIR/pimstaller.png $DESKTOP_ICON
+        sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
         rm -rf $TMPDIR
-        pimoroni-dashboard noupdate
+        pimstaller noupdate
         exit 0
     fi
 }
@@ -161,16 +161,21 @@ pim_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "Install software & examples" \
-    "2 Drum HAT" "Install software & examples" \
-    "3 Explorer HAT" "Install software & examples" \
-    "4 Piano HAT" "Install software & examples" \
-    "5 Pibrella" "Install software & examples" \
-    "6 PiGlow" "Install software & examples" \
-    "7 Scroll pHAT" "Install software & examples" \
-    "8 Skywriter HAT" "Install software & examples" \
-    "9 Unicorn HAT" "Install software & examples" \
-    "0 Take Screenshot" "Useful to help solve a problem" \
+    "01 Blinkt!" "Install software & examples" \
+    "02 Display-o-Tron 3000/HAT" "Install software & examples" \
+    "03 Drum HAT" "Install software & examples" \
+    "04 Enviro pHAT" "Install software & examples" \
+    "05 Explorer HAT/pHAT" "Install software & examples" \
+    "06 ESP IoT pHAT" "Install software & examples" \
+    "07 Micro Dot pHAT" "Install software & examples" \
+    "08 pHAT DAC" "Install software & examples" \
+    "09 Piano HAT" "Install software & examples" \
+    "10 Pibrella" "Install software & examples" \
+    "11 PiGlow" "Install software & examples" \
+    "12 Scroll pHAT" "Install software & examples" \
+    "13 Skywriter HAT" "Install software & examples" \
+    "14 Unicorn HAT/pHAT" "Install software & examples" \
+#    "99 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -178,16 +183,21 @@ pim_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$FUNCTION" in
-            1\ *) pim_net_install displayotron ;;
-            2\ *) pim_net_install drumhat ;;
-            3\ *) pim_net_install explorerhat ;;
-            4\ *) pim_net_install pianohat ;;
-            5\ *) pim_net_install pibrella ;;
-            6\ *) pim_net_install piglow ;;
-            7\ *) pim_net_install scrollphat ;;
-            8\ *) pim_net_install skywriter ;;
-            9\ *) pim_net_install unicornhat ;;
-            0\ *) pim_screenshot ;;
+            01\ *) pim_net_install blinkt ;;
+            02\ *) pim_net_install displayotron ;;
+            03\ *) pim_net_install drumhat ;;
+            04\ *) pim_net_install envirophat ;;
+            05\ *) pim_net_install explorerhat ;;
+            06\ *) pim_net_install iotphat ;;
+            07\ *) pim_net_install microdotphat ;;
+            08\ *) pim_net_install phatdac ;;
+            09\ *) pim_net_install pianohat ;;
+            10\ *) pim_net_install pibrella ;;
+            11\ *) pim_net_install piglow ;;
+            12\ *) pim_net_install scrollphat ;;
+            13\ *) pim_net_install skywriter ;;
+            14\ *) pim_net_install unicornhat ;;
+#            99\ *) pim_screenshot ;;
             *) pim_msgbox "Error: unrecognized option";;
         esac ||pim_msgbox "There was an error running option $FUNCTION"
     fi
