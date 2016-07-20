@@ -314,10 +314,10 @@ pim_menu() {
     "08 pHAT DAC" "Install software & examples" \
     "09 Piano HAT" "Install software & examples" \
     "10 Pibrella" "Install software & examples" \
-    "11 PiGlow" "Install software & examples" \
-    "12 Scroll pHAT" "Install software & examples" \
-    "13 Skywriter HAT" "Install software & examples" \
-    "14 Unicorn HAT/pHAT" "Install software & examples" \
+#    "11 PiGlow" "Install software & examples" \
+#    "12 Scroll pHAT" "Install software & examples" \
+#    "13 Skywriter HAT" "Install software & examples" \
+#    "14 Unicorn HAT/pHAT" "Install software & examples" \
 #    "99 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
 
@@ -336,10 +336,10 @@ pim_menu() {
             08\ *) get_install phatdac ;;
             09\ *) get_install pianohat ;;
             10\ *) get_install pibrella ;;
-            11\ *) get_install piglow ;;
-            12\ *) get_install scrollphat ;;
-            13\ *) get_install skywriter ;;
-            14\ *) get_install unicornhat ;;
+#            11\ *) get_install piglow ;;
+#            12\ *) get_install scrollphat ;;
+#            13\ *) get_install skywriter ;;
+#            14\ *) get_install unicornhat ;;
 #            99\ *) take_snap ;;
             *) whip_msgbox "Error: unrecognized option";;
         esac ||whip_msgbox "There was an error running option $FUNCTION"
@@ -422,15 +422,9 @@ fi
 
 if [[ $1 == 'uninstall' ]]; then
     pim_uninstall
-elif [[ $1 == 'update' ]]; then
+else
     pim_update $1
     about_msg
     pim_menu
-elif [[ $1 == 'install' ]]; then
-    pim_install    
-    about_msg
-    pim_menu
-else
-    about_msg
-    pim_menu
+    pim_install
 fi
