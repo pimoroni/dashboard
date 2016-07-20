@@ -358,42 +358,113 @@ check_software() {
 }
 
 
-whip_menu() {
-    FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
+main_menu() {
+    MAIN=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "displayotron" \
-    "2 Drum HAT" "drumhat" \
-    "3 Explorer HAT" "explorerhat" \
-    "4 Piano HAT" "pianohat" \
-    "5 Pibrella" "pibrella" \
-    "6 PiGlow" "piglow" \
-    "7 Scroll pHAT" "scrollphat" \
-    "8 Skywriter HAT" "skywriter" \
-    "9 Unicorn HAT" "unicornhat" \
-    "0 Take Screenshot" "Useful to help solve a problem" \
+            "1 my product is a HAT" "" \
+            "2 my product is a pHAT" "" \
+            "3 my product is something else" "" \
+            "4 I have a problem" "" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
     if [ $RETURN -eq 1 ]; then
         return 0
     elif [ $RETURN -eq 0 ]; then
-        case "$FUNCTION" in
+        case "$MAIN" in
+            1\ *) hat_menu ;;
+            2\ *) phat_menu ;;
+            3\ *) pim_menu ;;
+            4\ *) util_menu ;;
+            *) pim_msgbox "Error: unrecognized option";;
+        esac ||pim_msgbox "There was an error running option $MAIN"
+    fi
+}
+
+hat_menu() {
+    HAT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
+    --cancel-button Quit \
+    --ok-button Select \
+            "1 Display-o-Tron 3000/HAT" "displayotron" \
+            "2 Drum HAT" "drumhat" \
+            "3 Explorer HAT" "explorerhat" \
+            "4 Piano HAT" "pianohat" \
+            "5 Skywriter HAT" "skywriter" \
+            "6 Unicorn HAT" "unicornhat" \
+    3>&1 1>&2 2>&3)
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$HAT" in
             1\ *) get_install displayotron ;;
             2\ *) get_install drumhat ;;
             3\ *) get_install explorerhat ;;
             4\ *) get_install pianohat ;;
-            5\ *) get_install pibrella ;;
-            6\ *) get_install piglow ;;
-            7\ *) get_install scrollphat ;;
-            8\ *) get_install skywriter ;;
-            9\ *) get_install unicornhat ;;
-            0\ *) pim_screenshot ;;
+            5\ *) get_install skywriter ;;
+            6\ *) get_install unicornhat ;;
             *) pim_msgbox "Error: unrecognized option";;
-        esac ||pim_msgbox "There was an error running option $FUNCTION"
+        esac ||pim_msgbox "There was an error running option $HAT"
+    fi
+}
+phat_menu() {
+    PHAT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
+    --cancel-button Quit \
+    --ok-button Select \
+            "1 Scroll pHAT" "scrollphat" \
+    3>&1 1>&2 2>&3)
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$PHAT" in
+            1\ *) get_install scrollphat ;;
+            *) pim_msgbox "Error: unrecognized option";;
+        esac ||pim_msgbox "There was an error running option $PHAT"
     fi
 }
 
-whip_menu
+pim_menu() {
+    PIM=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
+    --cancel-button Quit \
+    --ok-button Select \
+            "1 Pibrella" "pibrella" \
+            "2 Piglow" "piglow" \
+    3>&1 1>&2 2>&3)
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$PIM" in
+            1\ *) get_install pibrella ;;
+            2\ *) get_install piglow ;;
+            *) pim_msgbox "Error: unrecognized option";;
+        esac ||pim_msgbox "There was an error running option $PIM"
+    fi
+}
+
+util_menu() {
+    UTIL=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
+    --cancel-button Quit \
+    --ok-button Select \
+            "0 Take Screenshot" "Useful to help solve a problem" \
+    3>&1 1>&2 2>&3)
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$UTIL" in
+            0\ *) pim_screenshot ;;
+            *) pim_msgbox "Error: unrecognized option";;
+        esac ||pim_msgbox "There was an error running option $UTIL"
+    fi
+}
+
+main_menu
 
 exit 0
