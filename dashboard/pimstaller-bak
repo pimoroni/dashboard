@@ -304,15 +304,20 @@ pim_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "Install software & examples" \
-    "2 Drum HAT" "Install software & examples" \
-    "3 Explorer HAT" "Install software & examples" \
-    "4 Piano HAT" "Install software & examples" \
-    "5 Pibrella" "Install software & examples" \
-    "6 PiGlow" "Install software & examples" \
-    "7 Scroll pHAT" "Install software & examples" \
-    "8 Skywriter HAT" "Install software & examples" \
-    "9 Unicorn HAT" "Install software & examples" \
+    "1 Blinkt!" "Install software & examples" \
+    "2 Display-o-Tron 3000/HAT" "Install software & examples" \
+    "3 Drum HAT" "Install software & examples" \
+    "4 Enviro pHAT" "Install software & examples" \
+    "5 Explorer HAT/pHAT" "Install software & examples" \
+    "6 ESP IoT pHAT" "Install software & examples" \
+    "7 Micro Dot pHAT" "Install software & examples" \
+    "8 pHAT DAC" "Install software & examples" \
+    "9 Piano HAT" "Install software & examples" \
+#    "10 Pibrella" "Install software & examples" \
+#    "11 PiGlow" "Install software & examples" \
+#    "12 Scroll pHAT" "Install software & examples" \
+#    "13 Skywriter HAT" "Install software & examples" \
+#    "14 Unicorn HAT/pHAT" "Install software & examples" \
     "0 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
 
@@ -321,18 +326,23 @@ pim_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$FUNCTION" in
-            1\ *) pim_net_install displayotron ;;
-            2\ *) pim_net_install drumhat ;;
-            3\ *) pim_net_install explorerhat ;;
-            4\ *) pim_net_install pianohat ;;
-            5\ *) pim_net_install pibrella ;;
-            6\ *) pim_net_install piglow ;;
-            7\ *) pim_net_install scrollphat ;;
-            8\ *) pim_net_install skywriter ;;
-            9\ *) pim_net_install unicornhat ;;
-            0\ *) pim_screenshot ;;
-            *) pim_msgbox "Error: unrecognized option";;
-        esac ||pim_msgbox "There was an error running option $FUNCTION"
+            1\ *) get_install blinkt ;;
+            2\ *) get_install displayotron ;;
+            3\ *) get_install drumhat ;;
+            4\ *) get_install envirophat ;;
+            5\ *) get_install explorerhat ;;
+            6\ *) get_install iotphat ;;
+            7\ *) get_install microdotphat ;;
+            8\ *) get_install phatdac ;;
+            9\ *) get_install pianohat ;;
+#            10\ *) get_install pibrella ;;
+#            11\ *) get_install piglow ;;
+#            12\ *) get_install scrollphat ;;
+#            13\ *) get_install skywriter ;;
+#            14\ *) get_install unicornhat ;;
+            0\ *) take_snap ;;
+            *) whip_msgbox "Error: unrecognized option";;
+        esac ||whip_msgbox "There was an error running option $FUNCTION"
     fi
 }
 
@@ -352,32 +362,6 @@ Perform all global variables declarations as well as function definition
 above this section for clarity, thanks!
 
 MAINSTART
-
-
-pim_check_network() {
-    sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` > /dev/null && return 0 || return 1
-}
-
-# Runs the relevant net install script and then returns to the menu
-pim_net_install() {
-    pim_check_network || (pim_msgbox "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-
-    \curl -sS get.pimoroni.com/$1 | bash
-
-    read -p "Press [Enter] key to continue..." < /dev/tty
-
-    pim_menu
-}
-
-
-
-
-
-
-
-
-
-
 
 arch_check
 os_check
