@@ -319,15 +319,15 @@ whip_menu() {
     FUNCTION=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Quit \
     --ok-button Select \
-    "1 Display-o-Tron 3000/HAT" "Install software & examples" \
-    "2 Drum HAT" "Install software & examples" \
-    "3 Explorer HAT" "Install software & examples" \
-    "4 Piano HAT" "Install software & examples" \
-    "5 Pibrella" "Install software & examples" \
-    "6 PiGlow" "Install software & examples" \
-    "7 Scroll pHAT" "Install software & examples" \
-    "8 Skywriter HAT" "Install software & examples" \
-    "9 Unicorn HAT" "Install software & examples" \
+    "1 Display-o-Tron 3000/HAT" "Documentation & examples" \
+    "2 Drum HAT" "Documentation & examples" \
+    "3 Explorer HAT" "Documentation & examples" \
+    "4 Piano HAT" "Documentation & examples" \
+    "5 Pibrella" "Documentation & examples" \
+    "6 PiGlow" "Documentation & examples" \
+    "7 Scroll pHAT" "Documentation & examples" \
+    "8 Skywriter HAT" "Documentation & examples" \
+    "9 Unicorn HAT" "https://shop.pimoroni.com/products/unicorn-phat" \
     "0 Take Screenshot" "Useful to help solve a problem" \
     3>&1 1>&2 2>&3)
     
