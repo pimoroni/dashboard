@@ -337,10 +337,8 @@ listools=( i2c spi )
 apt_pkg_check() {
     if apt_pkg_req "python-$1"; then
         status="Installed"
-        return $status
     else
         status="Install"
-        return $status
     fi
 }          
 
