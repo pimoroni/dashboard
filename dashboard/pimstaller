@@ -336,9 +336,13 @@ listools=( "i2c" "spi" )
 
 for board in ${listhat[@]}; do
     if apt_pkg_req "python-$board"; then
-        export board="Installed"
+        board="Installed"
+        export $board
+        echo $board
     else
-        export board="Install"
+        board="Install"
+        export $board
+        echo $board
     fi
 done
             
