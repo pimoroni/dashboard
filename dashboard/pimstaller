@@ -469,7 +469,7 @@ pim_menu() {
     PIM=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Back \
     --ok-button Select \
-            "Blinkt!" "import blinkt" \
+            "Blinkt" "import blinkt" \
             "Display-o-Tron 3000" "import dot3k" \
             "Pibrella" "import pibrella" \
             "Piglow" "import piglow" \
@@ -481,7 +481,7 @@ pim_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$PIM" in
-            Blinkt!\ *) get_install blinkt ;;
+            Blinkt\ *) get_install blinkt ;;
             Display-o-Tron\ *) get_install dot3k ;;
             Pibrella\ *) get_install pibrella ;;
             Piglow\ *) get_install piglow ;;
