@@ -497,8 +497,8 @@ util_menu() {
     --ok-button Select \
             "Hardware Info" "Gather hardware and software info" \
             "Take Screenshot" "Useful to help solve a problem" \
-            "Update Product List" "Retrieve info for new products" \
             "Upgrade my Software" "This will update all your software" \
+            "Update Product List" "Retrieve info for new products" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -508,8 +508,8 @@ util_menu() {
         case "$UTIL" in
             Hardware\ *) get_install cpuinfo ;;
             Take\ *) take_snap ;;
-            Update\ *) get_install uptodate ;;
-            Upgrade\ *) self_update ;;
+            Upgrade\ *) get_install uptodate ;;
+            Update\ *) self_update ;;
             *) whip_msgbox "Error: unrecognized option";;
         esac ||whip_msgbox "There was an error running option $UTIL"
     fi
