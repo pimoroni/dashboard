@@ -383,8 +383,8 @@ main_menu() {
             3\ *) flot_menu ;;
             4\ *) pim_menu ;;
             5\ *) util_menu ;;
-            *) pim_msgbox "Error: unrecognized option";;
-        esac ||pim_msgbox "There was an error running option $MAIN"
+            *) whip_msgbox "Error: unrecognized option";;
+        esac ||whip_msgbox "There was an error running option $MAIN"
     fi
 }
 
@@ -411,8 +411,8 @@ hat_menu() {
             Piano\ *) get_install pianohat ;;
             Skywriter\ *) get_install skywriter ;;
             Unicorn\ *) get_install unicornhat ;;
-            *) pim_msgbox "Error: unrecognized option";;
-        esac ||pim_msgbox "There was an error running option $HAT"
+            *) whip_msgbox "Error: unrecognized option";;
+        esac ||whip_msgbox "There was an error running option $HAT"
     fi
 }
 phat_menu() {
@@ -440,8 +440,8 @@ phat_menu() {
             pHAT\ *) get_install phatdac ;;
             Scroll\ *) get_install scrollphat ;;
             Unicorn\ *) get_install unicornhat ;;
-            *) pim_msgbox "Error: unrecognized option";;
-        esac ||pim_msgbox "There was an error running option $PHAT"
+            *) whip_msgbox "Error: unrecognized option";;
+        esac ||whip_msgbox "There was an error running option $PHAT"
     fi
 }
 
@@ -460,8 +460,8 @@ flot_menu() {
         case "$PIM" in
             Flotilla\ *) get_install flotilla ;;
             Rockpool\ *) get_install rockpool ;;
-            *) pim_msgbox "Error: unrecognized option";;
-        esac ||pim_msgbox "There was an error running option $PIM"
+            *) whip_msgbox "Error: unrecognized option";;
+        esac ||whip_msgbox "There was an error running option $PIM"
     fi
 }
 
@@ -486,8 +486,8 @@ pim_menu() {
             Pibrella\ *) get_install pibrella ;;
             Piglow\ *) get_install piglow ;;
             Skywriter\ *) get_install skywriter ;;
-            *) pim_msgbox "Error: unrecognized option";;
-        esac ||pim_msgbox "There was an error running option $PIM"
+            *) whip_msgbox "Error: unrecognized option";;
+        esac ||whip_msgbox "There was an error running option $PIM"
     fi
 }
 
@@ -510,8 +510,8 @@ util_menu() {
             Take\ *) get_install uptodate ;;
             Update\ *) pim_screenshot ;;
             Upgrade\ *) self_update ;;
-            *) pim_msgbox "Error: unrecognized option";;
-        esac ||pim_msgbox "There was an error running option $UTIL"
+            *) whip_msgbox "Error: unrecognized option";;
+        esac ||whip_msgbox "There was an error running option $UTIL"
     fi
 }
 
