@@ -235,15 +235,12 @@ take_snap() {
 
 self_update() {
     if check_network; then
-        if [[ $1 == 'noupdate' ]]; then
-            return
-        fi
         echo "Updating..."
         export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
         curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
         sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
         rm -rf $TMPDIR
-        pimstaller noupdate
+        pimstaller
         exit 0
     fi
 }
@@ -273,7 +270,6 @@ os_check
 whip_size
 home_dir
 
-PIM_VERSION=1
 WORKING_DIR="$USER_HOME/Pimoroni"
 DESKTOP_FILE="$USER_HOME/Desktop/pimstaller.desktop"
 DESKTOP_APP_FILE="/usr/share/applications/pimstaller.desktop"
@@ -325,8 +321,6 @@ if [ $forcesudo == "yes" ]; then
     sudocheck
 fi
 
-#self_update $1
-
 about_msg() {
     whip_msgbox "\
     This handy tool will help you get started with Pimoroni products. Simply pick the add-on board you want to set up from the list, hit select and we'll walk you through the install process in a few easy steps.
@@ -335,57 +329,6 @@ about_msg() {
 
     - The Pimoroni Crew\
 "
-}
-about_msg
-
-check_doc() {
-    if [ -d $WORKING_DIR/$1/doc ]; then
-        return 1
-    else
-        return 0
-    fi
-}
-
-check_examples() {
-    if [ -d $WORKING_DIR/$1/examples ]; then
-        return 1
-    else
-        return 0
-    fi
-}
-
-check_software() {
-    if apt_pkg_req python-$1 ; then
-        return 1
-    else
-        return 0
-    fi
-}
-
-main_menu() {
-    MAIN=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
-    --cancel-button Quit \
-    --ok-button Select \
-            "1 my Pimoroni product is a HAT" "" \
-            "2 my Pimoroni product is a pHAT" "" \
-            "3 my Pimoroni product is Flotilla" "" \
-            "4 my product is something else" "" \
-            "5 I have a problem and need help" "" \
-    3>&1 1>&2 2>&3)
-
-    RETURN=$?
-    if [ $RETURN -eq 1 ]; then
-        return 0
-    elif [ $RETURN -eq 0 ]; then
-        case "$MAIN" in
-            1\ *) hat_menu ;;
-            2\ *) phat_menu ;;
-            3\ *) flot_menu ;;
-            4\ *) pim_menu ;;
-            5\ *) util_menu ;;
-            *) whip_msgbox "Error: unrecognized option";;
-        esac ||whip_msgbox "There was an error running option $MAIN"
-    fi
 }
 
 hat_menu() {
@@ -415,6 +358,7 @@ hat_menu() {
         esac ||whip_msgbox "There was an error running option $HAT"
     fi
 }
+
 phat_menu() {
     PHAT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Back \
@@ -515,6 +459,32 @@ util_menu() {
     fi
 }
 
-main_menu
+about_msg
+
+while true; do
+    MAIN=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
+    --cancel-button Quit \
+    --ok-button Select \
+            "1 my Pimoroni product is a HAT" "" \
+            "2 my Pimoroni product is a pHAT" "" \
+            "3 my Pimoroni product is Flotilla" "" \
+            "4 my product is something else" "" \
+            "5 I have a problem and need help" "" \
+    3>&1 1>&2 2>&3)
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$MAIN" in
+            1\ *) hat_menu ;;
+            2\ *) phat_menu ;;
+            3\ *) flot_menu ;;
+            4\ *) pim_menu ;;
+            5\ *) util_menu ;;
+            *) whip_msgbox "Error: unrecognized option";;
+        esac ||whip_msgbox "There was an error running option $MAIN"
+    fi
+done
 
 exit 0
