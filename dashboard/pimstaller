@@ -470,7 +470,7 @@ while true; do
 
     RETURN=$?
     if [ $RETURN -eq 1 ]; then
-        return 0
+        exit 1
     elif [ $RETURN -eq 0 ]; then
         case "$MAIN" in
             1\ *) hat_menu ;;
