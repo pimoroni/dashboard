@@ -186,12 +186,8 @@ apt_pkg_req() {
 
 get_install() {
     check_network || (whip_msgbox "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-
     \curl -sS get.pimoroni.com/$1 | bash
-
     read -p "Press [Enter] key to continue..." < /dev/tty
-
-    pim_menu
 }
 
 imgur_upload() {
