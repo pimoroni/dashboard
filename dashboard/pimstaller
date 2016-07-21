@@ -446,7 +446,7 @@ phat_menu() {
 }
 
 flot_menu() {
-    PIM=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
+    FLOT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Back \
     --ok-button Select \
         "Flotilla Python API only" "import flotilla" \
@@ -457,11 +457,11 @@ flot_menu() {
     if [ $RETURN -eq 1 ]; then
         return 0
     elif [ $RETURN -eq 0 ]; then
-        case "$PIM" in
+        case "$FLOT" in
             Flotilla\ *) get_install flotilla ;;
             Rockpool\ *) get_install rockpool ;;
             *) whip_msgbox "Error: unrecognized option";;
-        esac ||whip_msgbox "There was an error running option $PIM"
+        esac ||whip_msgbox "There was an error running option $FLOT"
     fi
 }
 
@@ -507,8 +507,8 @@ util_menu() {
     elif [ $RETURN -eq 0 ]; then
         case "$UTIL" in
             Hardware\ *) get_install cpuinfo ;;
-            Take\ *) get_install uptodate ;;
-            Update\ *) pim_screenshot ;;
+            Take\ *) take_snap ;;
+            Update\ *) get_install uptodate ;;
             Upgrade\ *) self_update ;;
             *) whip_msgbox "Error: unrecognized option";;
         esac ||whip_msgbox "There was an error running option $UTIL"
