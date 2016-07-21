@@ -405,7 +405,7 @@ hat_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$HAT" in
-            Display\ *) get_install displayotron ;;
+            Display-o-Tron\ *) get_install displayotron ;;
             Drum\ *) get_install drumhat ;;
             Explorer\ *) get_install explorerhat ;;
             Piano\ *) get_install pianohat ;;
@@ -481,8 +481,8 @@ pim_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$PIM" in
-            Blinkt\ *) get_install blinkt ;;
-            Display\ *) get_install dot3k ;;
+            Blinkt!\ *) get_install blinkt ;;
+            Display-o-Tron\ *) get_install dot3k ;;
             Pibrella\ *) get_install pibrella ;;
             Piglow\ *) get_install piglow ;;
             Skywriter\ *) get_install skywriter ;;
