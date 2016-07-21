@@ -321,26 +321,16 @@ if [ $forcesudo == "yes" ]; then
     sudocheck
 fi
 
-about_msg() {
-    whip_msgbox "\
-    This handy tool will help you get started with Pimoroni products. Simply pick the add-on board you want to set up from the list, hit select and we'll walk you through the install process in a few easy steps.
-
-    Enjoy
-
-    - The Pimoroni Crew\
-"
-}
-
 hat_menu() {
     HAT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Back \
     --ok-button Select \
-            "Display-o-Tron HAT" "import dot3k" \
-            "Drum HAT" "import drumhat" \
-            "Explorer HAT" "import explorerhat" \
-            "Piano HAT" "import pianohat" \
-            "Skywriter HAT" "import skywriter" \
-            "Unicorn HAT" "import unicornhat" \
+            "Display-o-Tron HAT" "" \
+            "Drum HAT" "" \
+            "Explorer HAT" "" \
+            "Piano HAT" "" \
+            "Skywriter HAT" "" \
+            "Unicorn HAT" "" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -363,13 +353,13 @@ phat_menu() {
     PHAT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Back \
     --ok-button Select \
-            "Enviro pHAT" "import envirophat" \
-            "ESP IoT pHAT" "firmware scripts" \
-            "Explorer pHAT" "import explorerhat" \
-            "Micro Dot pHAT" "import microdotphat" \
-            "pHAT DAC" "setup DAC and audio tests" \
-            "Scroll pHAT" "import scrollphat" \
-            "Unicorn pHAT" "import unicornhat" \
+            "Enviro pHAT" "" \
+            "ESP IoT pHAT" "" \
+            "Explorer pHAT" "" \
+            "Micro Dot pHAT" "" \
+            "pHAT DAC" "" \
+            "Scroll pHAT" "" \
+            "Unicorn pHAT" "" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -393,8 +383,8 @@ flot_menu() {
     FLOT=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Back \
     --ok-button Select \
-        "Flotilla Python API only" "import flotilla" \
-        "Rockpool (and Flotilla API)" "flotil.la/rockpool" \
+        "Flotilla Python API only" "" \
+        "Rockpool (and Flotilla API)" "" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -439,10 +429,10 @@ util_menu() {
     UTIL=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
     --cancel-button Back \
     --ok-button Select \
-            "Hardware Info" "Gather hardware and software info" \
-            "Take Screenshot" "Useful to help solve a problem" \
-            "Upgrade my Software" "This will update all your software" \
-            "Update Product List" "Retrieve info for new products" \
+            "Gather System Info" "" \
+            "Take Screenshot" "" \
+            "Upgrade my Pi Software" "" \
+            "Update Product List" "" \
     3>&1 1>&2 2>&3)
 
     RETURN=$?
@@ -459,7 +449,13 @@ util_menu() {
     fi
 }
 
-about_msg
+whip_msgbox "\
+    This handy tool will help you get started with Pimoroni products. Simply pick the add-on board you want to set up from the list, hit select and we'll walk you through the install process in a few easy steps.
+
+    Enjoy
+
+    - The Pimoroni Crew\
+"
 
 while true; do
     MAIN=$(whiptail --title "Pimoroni Software Installer" --menu "Choose your add-on..." $WT_HEIGHT $(($WT_WIDTH-10)) $WT_MENU_HEIGHT \
@@ -484,6 +480,8 @@ while true; do
             5\ *) util_menu ;;
             *) whip_msgbox "Error: unrecognized option";;
         esac ||whip_msgbox "There was an error running option $MAIN"
+    else
+      exit 1
     fi
 done
 
