@@ -440,7 +440,7 @@ util_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$UTIL" in
-            Hardware\ *) get_install cpuinfo ;;
+            Gather\ *) get_install cpuinfo ;;
             Take\ *) take_snap ;;
             Upgrade\ *) get_install uptodate ;;
             Update\ *) self_update ;;
