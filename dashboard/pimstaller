@@ -196,7 +196,7 @@ timestamp() {
 
 save_stdout() {
     savename=$(timestamp)-info.txt
-    get_install $1 2>&1 | tee $savename
+    get_install $1 2>&1 | tee ~/Desktop/$savename
     whip_msgbox "Success, your system info has been saved to the Desktop!"
 }
 
