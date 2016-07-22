@@ -196,7 +196,7 @@ get_install() {
 
 save_stdout() {
     savename=$(timestamp)-info.txt
-    get_install $1 2>&1 | tee ~/Desktop/$savename
+    get_install $1 2>&1 | tee ~/Desktop/%Y%m%d-%H%M-info.txt
     whip_msgbox "Success, your system info has been saved to the Desktop!"
 }
 
@@ -210,7 +210,7 @@ save_snap() {
         whip_msgbox "Please hit enter and then select the area you would like to screenshot by drawing a rectangle with your mouse.\n\nMake sure to move this window out of the way first!\n\nThis screenshot will be stored on your desktop, from where you can share it with us or with the world!"
         echo "Taking screenshot..."
         echo "Draw a rectangle around your subject."
-        scrot -s "~/Desktop/%Y%m%d-%H%M-snap.png"
+        scrot -s ~/Desktop/%Y%m%d-%H%M-snap.png
         whip_msgbox "Success, your screenshot has been saved to the Desktop!"
     fi
 }
