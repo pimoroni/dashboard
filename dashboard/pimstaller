@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Pimoroni Product Setup Dashboard
-# Provides a familiar GUI for choosing which product installer to run
-
-# original imgur script by Bart Nagel <bart@tremby.net>
-# modified from version 4
-# API Key provided by Alan@imgur.com
-
 : <<'DISCLAIMER'
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -63,6 +56,10 @@ warning() {
 
 newline() {
     echo ""
+}
+
+timestamp() {
+    date +%Y%m%d-%H%M
 }
 
 sudocheck() {
@@ -184,31 +181,6 @@ apt_pkg_req() {
     fi
 }
 
-get_install() {
-    check_network || (whip_msgbox "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    \curl -sS get.pimoroni.com/$1 | bash
-    read -p "Press [Enter] key to continue..." < /dev/tty
-}
-
-save_stdout() {
-    get_install cpuinfo &> "~/Desktop/%Y-%m-%d-pimstaller-info.txt"
-    whip_msgbox "Success, your system info has been saved to the Desktop!"
-    fi
-}
-
-save_snap() {
-    if ! command -v scrot > /dev/null; then
-        warning "scrot is not installed" 
-        echo "try: sudo apt-get install scrot"
-    else
-        whip_msgbox "Please hit enter and then select the area you would like to screenshot by drawing a rectangle with your mouse.\n\nMake sure to move this window out of the way first!\n\nThis screenshot will be stored on your desktop, from where you can share it with us or with the world!"
-        echo "Taking screenshot..."
-        echo "Draw a rectangle around your subject."
-        scrot "~/Desktop/%Y-%m-%d-pimstaller-snap.png" -s -e "echo $f"
-        whip_msgbox "Success, your screenshot has been saved to the Desktop!"
-    fi
-}
-
 self_update() {
     if check_network; then
         echo "Updating..."
@@ -218,6 +190,34 @@ self_update() {
         rm -rf $TMPDIR
         pimstaller
         exit 0
+    fi
+}
+
+get_install() {
+    check_network || (whip_msgbox "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
+    \curl -sS get.pimoroni.com/$1 | bash
+    read -p "Press Enter to continue..." < /dev/tty
+}
+
+save_stdout() {
+    savename=$(timestamp)-info.txt
+    get_install $1 2>&1 | tee ~/Desktop/$savename
+    sed -i "/Press Enter/d" ~/Desktop/$savename
+    whip_msgbox "Success, your system info has been saved to the Desktop!"
+}
+
+save_snap() {
+    if ! command -v scrot > /dev/null; then
+        warning "scrot is not installed" 
+        echo "try: sudo apt-get install scrot"
+    elif ! [ "$DISPLAY" ]; then
+        whip_msgbox "X is not running, we can't take screenshots, sorry!"        
+    else
+        whip_msgbox "Please hit enter and then select the area you would like to screenshot by drawing a rectangle with your mouse.\n\nMake sure to move this window out of the way first!\n\nThis screenshot will be stored on your desktop, from where you can share it with us or with the world!"
+        echo "Taking screenshot..."
+        echo "Draw a rectangle around your subject."
+        scrot -s ~/Desktop/%Y%m%d-%H%M-snap.png
+        whip_msgbox "Success, your screenshot has been saved to the Desktop!"
     fi
 }
 
@@ -416,7 +416,7 @@ util_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$UTIL" in
-            Gather\ *) get_install cpuinfo ;;
+            Gather\ *) save_stdout cpuinfo ;;
             Take\ *) save_snap ;;
             Upgrade\ *) get_install uptodate ;;
             Update\ *) self_update ;;
