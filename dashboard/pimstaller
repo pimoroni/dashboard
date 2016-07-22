@@ -191,7 +191,7 @@ get_install() {
 }
 
 save_stdout() {
-    get_install cpuinfo &> "~/Desktop/%Y-%m-%d-pimstaller-info.txt"
+    get_install $1 &> "~/Desktop/%Y-%m-%d-pimstaller-info.txt"
     whip_msgbox "Success, your system info has been saved to the Desktop!"
 }
 
@@ -415,7 +415,7 @@ util_menu() {
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$UTIL" in
-            Gather\ *) get_install cpuinfo ;;
+            Gather\ *) save_stdout cpuinfo ;;
             Take\ *) save_snap ;;
             Upgrade\ *) get_install uptodate ;;
             Update\ *) self_update ;;
