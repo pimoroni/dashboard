@@ -171,7 +171,7 @@ home_dir() {
 }
 
 check_network() {
-    sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` > /dev/null && return 0 || return 1
+    sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` &> /dev/null && return 0 || return 1
 }
 
 apt_pkg_req() {
@@ -190,42 +190,22 @@ get_install() {
     read -p "Press [Enter] key to continue..." < /dev/tty
 }
 
-imgur_upload() {
-    file="$1"
-    apikey="b3625162d3418ac51a9ee805b1840452"
-
-    response=$(curl -F "key=$apikey" -H "Expect: " -F "image=@$file" \
-    http://imgur.com/api/upload.xml 2>/dev/null)
-    # the "Expect: " header is to get around a problem when using this through 
-    # the Squid proxy. Not sure if it's a Squid bug or what.
-    if [ $? -ne 0 ]; then
-        echo "Upload failed" >&2
-    elif [ $(echo $response | grep -c "<error_msg>") -gt 0 ]; then
-        echo "Error message from imgur:" >&2
-        echo $response | sed -r 's/.*<error_msg>(.*)<\/error_msg>.*/\1/' >&2
+save_stdout() {
+    get_install cpuinfo &> "~/Desktop/%Y-%m-%d-pimstaller-info.txt"
+    whip_msgbox "Success, your system info has been saved to the Desktop!"
     fi
-
-    url=$(echo $response | sed -r 's/.*<original_image>(.*)<\/original_image>.*/\1/')
-    deleteurl=$(echo $response | sed -r 's/.*<delete_page>(.*)<\/delete_page>.*/\1/')
-    echo $url
-    return 0
 }
 
-take_snap() {
+save_snap() {
     if ! command -v scrot > /dev/null; then
         warning "scrot is not installed" 
         echo "try: sudo apt-get install scrot"
     else
-        whip_msgbox "Please hit enter and then select the area you would like to screenshot by drawing a rectangle with your mouse.\n\nMake sure to move this window out of the way first!\n\nWarning!\nThis screenshot will be uploaded to imgur so you can share it with us, make sure it's not showing anything sensitive!"
+        whip_msgbox "Please hit enter and then select the area you would like to screenshot by drawing a rectangle with your mouse.\n\nMake sure to move this window out of the way first!\n\nThis screenshot will be stored on your desktop, from where you can share it with us or with the world!"
         echo "Taking screenshot..."
         echo "Draw a rectangle around your subject."
-        export PIMCWD=$(pwd)
-        cd /tmp
-        export IMGNAME=`scrot '%Y-%m-%d-pimoroni-help.png' -s -e 'echo $f'`
-        export IMGURL=$(imgur_upload $IMGNAME)
-        #rm $IMGNAME
-        cd $PIMCWD
-        whip_msgbox "Okay, your screenshot has been uploaded to:\n\n$IMGURL\n\nInclude this URL in your support query, and we'll be able to better identify your problem!\n\nYou can also find it in /tmp/$IMGNAME"
+        scrot "~/Desktop/%Y-%m-%d-pimstaller-snap.png" -s -e "echo $f"
+        whip_msgbox "Success, your screenshot has been saved to the Desktop!"
     fi
 }
 
@@ -437,7 +417,7 @@ util_menu() {
     elif [ $RETURN -eq 0 ]; then
         case "$UTIL" in
             Gather\ *) get_install cpuinfo ;;
-            Take\ *) take_snap ;;
+            Take\ *) save_snap ;;
             Upgrade\ *) get_install uptodate ;;
             Update\ *) self_update ;;
             *) whip_msgbox "Error: unrecognized option";;
