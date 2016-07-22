@@ -193,7 +193,6 @@ get_install() {
 save_stdout() {
     get_install cpuinfo &> "~/Desktop/%Y-%m-%d-pimstaller-info.txt"
     whip_msgbox "Success, your system info has been saved to the Desktop!"
-    fi
 }
 
 save_snap() {
