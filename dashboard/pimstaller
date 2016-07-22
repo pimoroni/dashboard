@@ -65,6 +65,10 @@ newline() {
     echo ""
 }
 
+timestamp() {
+    date +%Y%m%d-%H%M
+}
+
 sudocheck() {
     if [ $(id -u) -ne 0 ]; then
         echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
@@ -190,10 +194,6 @@ get_install() {
     read -p "Press [Enter] key to continue..." < /dev/tty
 }
 
-timestamp() {
-    date +%Y%m%d-%H%M
-}
-
 save_stdout() {
     savename=$(timestamp)-info.txt
     get_install $1 2>&1 | tee ~/Desktop/$savename
@@ -210,7 +210,7 @@ save_snap() {
         whip_msgbox "Please hit enter and then select the area you would like to screenshot by drawing a rectangle with your mouse.\n\nMake sure to move this window out of the way first!\n\nThis screenshot will be stored on your desktop, from where you can share it with us or with the world!"
         echo "Taking screenshot..."
         echo "Draw a rectangle around your subject."
-        scrot "~/Desktop/%Y%m%d-%H%M-snap.png" -s -e "echo $f"
+        scrot -s "~/Desktop/%Y%m%d-%H%M-snap.png"
         whip_msgbox "Success, your screenshot has been saved to the Desktop!"
     fi
 }
