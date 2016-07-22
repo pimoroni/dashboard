@@ -188,15 +188,28 @@ apt_pkg_req() {
     fi
 }
 
+self_update() {
+    if check_network; then
+        echo "Updating..."
+        export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
+        curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
+        sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
+        rm -rf $TMPDIR
+        pimstaller
+        exit 0
+    fi
+}
+
 get_install() {
     check_network || (whip_msgbox "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
     \curl -sS get.pimoroni.com/$1 | bash
-    read -p "Press [Enter] key to continue..." < /dev/tty
+    read -p "Press [Enter] to continue..." < /dev/tty
 }
 
 save_stdout() {
     savename=$(timestamp)-info.txt
     get_install $1 2>&1 | tee ~/Desktop/$savename
+    sed -e "/Press [Enter]/d" ~/Desktop/$savename
     whip_msgbox "Success, your system info has been saved to the Desktop!"
 }
 
@@ -212,18 +225,6 @@ save_snap() {
         echo "Draw a rectangle around your subject."
         scrot -s ~/Desktop/%Y%m%d-%H%M-snap.png
         whip_msgbox "Success, your screenshot has been saved to the Desktop!"
-    fi
-}
-
-self_update() {
-    if check_network; then
-        echo "Updating..."
-        export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
-        curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
-        sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
-        rm -rf $TMPDIR
-        pimstaller
-        exit 0
     fi
 }
 
