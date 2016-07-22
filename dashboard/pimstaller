@@ -204,6 +204,8 @@ save_snap() {
     if ! command -v scrot > /dev/null; then
         warning "scrot is not installed" 
         echo "try: sudo apt-get install scrot"
+    elif ! [ "$DISPLAY" ]; then
+        whip_msgbox "X is not running, we can't take screenshots, sorry!"        
     else
         whip_msgbox "Please hit enter and then select the area you would like to screenshot by drawing a rectangle with your mouse.\n\nMake sure to move this window out of the way first!\n\nThis screenshot will be stored on your desktop, from where you can share it with us or with the world!"
         echo "Taking screenshot..."
