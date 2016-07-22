@@ -196,13 +196,13 @@ self_update() {
 get_install() {
     check_network || (whip_msgbox "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
     \curl -sS get.pimoroni.com/$1 | bash
-    read -p "Press [Enter] to continue..." < /dev/tty
+    read -p "Press Enter to continue..." < /dev/tty
 }
 
 save_stdout() {
     savename=$(timestamp)-info.txt
     get_install $1 2>&1 | tee ~/Desktop/$savename
-    sed -i "/Press [Enter]/d" ~/Desktop/$savename
+    sed -i "/Press Enter/d" ~/Desktop/$savename
     whip_msgbox "Success, your system info has been saved to the Desktop!"
 }
 
