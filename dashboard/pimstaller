@@ -190,8 +190,13 @@ get_install() {
     read -p "Press [Enter] key to continue..." < /dev/tty
 }
 
+timestamp() {
+    date +%Y%m%d-%H%M
+}
+
 save_stdout() {
-    get_install $1 2>&1 | tee "~/Desktop/%Y-%m-%d-pimstaller-info.txt"
+    savename=$(timestamp)-info.txt
+    get_install $1 2>&1 | tee $savename
     whip_msgbox "Success, your system info has been saved to the Desktop!"
 }
 
@@ -203,7 +208,7 @@ save_snap() {
         whip_msgbox "Please hit enter and then select the area you would like to screenshot by drawing a rectangle with your mouse.\n\nMake sure to move this window out of the way first!\n\nThis screenshot will be stored on your desktop, from where you can share it with us or with the world!"
         echo "Taking screenshot..."
         echo "Draw a rectangle around your subject."
-        scrot "~/Desktop/%Y-%m-%d-pimstaller-snap.png" -s -e "echo $f"
+        scrot "~/Desktop/%Y%m%d-%H%M-snap.png" -s -e "echo $f"
         whip_msgbox "Success, your screenshot has been saved to the Desktop!"
     fi
 }
