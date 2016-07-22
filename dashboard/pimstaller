@@ -191,7 +191,7 @@ get_install() {
 }
 
 save_stdout() {
-    get_install $1 &> "~/Desktop/%Y-%m-%d-pimstaller-info.txt"
+    get_install $1 2>&1 | tee "~/Desktop/%Y-%m-%d-pimstaller-info.txt"
     whip_msgbox "Success, your system info has been saved to the Desktop!"
 }
 
