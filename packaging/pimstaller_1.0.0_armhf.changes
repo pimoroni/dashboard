@@ -1,0 +1,43 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.8
+Date: Thu, 21 Jul 2016 00:00:00 +0000
+Source: pimstaller
+Binary: pimstaller
+Architecture: source all
+Version: 1.0.0
+Distribution: UNRELEASED
+Urgency: low
+Maintainer: Rogue Marechal <hal@pimoroni.com>
+Changed-By: Rogue Marechal <hal@pimoroni.com>
+Description:
+ pimstaller - Pimoroni software installer
+Changes:
+ pimstaller (1.0.0) UNRELEASED; urgency=low
+ .
+   * Zenity support with Whiptail fallback
+Checksums-Sha1:
+ 95da218fccef4d04d3d7a3ae7a9d909e1908477e 1199 pimstaller_1.0.0.dsc
+ 004289ef6bd83e5ac38b599e7fc1b1a0acf4718d 17780 pimstaller_1.0.0.tar.xz
+ d38b577a4732870c99b9c306edbd8b8b46e55bf1 18392 pimstaller_1.0.0_all.deb
+Checksums-Sha256:
+ 13307e984d6669cc44bc351ef98dbb0d61096482b03dc8463933840261b0afc0 1199 pimstaller_1.0.0.dsc
+ 0ae9e62eaff9473f531d2c861eb3cd72ceac5af9d4654fcaab55538a1d8e9330 17780 pimstaller_1.0.0.tar.xz
+ e0e12dd7b782bcbd07f2ce7c43654a5626b8b5138b9019e96e77b773e421693c 18392 pimstaller_1.0.0_all.deb
+Files:
+ bb25f439b442aa498c0d3d72de1637af 1199 utils extra pimstaller_1.0.0.dsc
+ e4fa93310daef5f31007c8242bb2dbea 17780 utils extra pimstaller_1.0.0.tar.xz
+ 7c4ac8b08e32a7a64fb2c9612bdea50b 18392 utils extra pimstaller_1.0.0_all.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBAgAGBQJYB6ljAAoJEMAF0IhqVInw8lIH+wbrt3xa9dmwza+3mJOXwql+
+le1CviOE3jIkYBfnl46upqDuya4w3pyIP2BMoJ/QO33fHDzwTVjnMZmlf4xkVI3x
+EmtlXja3Kf9lndRHdUJvgTm8VNMXCeK9hSDp2ivs+TqjphPQrr1ogQYsAukvDDVx
+YCnp7uwUtvKHH+OaLhvWKqFSu9XifOyboaNVcE1Goffg/I6sCufzsX5Q5CvdB3Ow
+/BzZduZr7hRkysjTb8pouwolOXhku6DXLEQNHhCrskwFFFLZKPKBLiuf0UzPwX4N
+dCOFeSvE5VrsetWEd81hLKirXCN0VqbWVYdIim727on5vIJF3v5VvsYvWhxpsU8=
+=Mub3
+-----END PGP SIGNATURE-----
