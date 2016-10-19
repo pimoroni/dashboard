@@ -22,6 +22,7 @@ DISCLAIMER
 # script control variables
 
 productname="Pimstaller" # the name of the product to install
+prodversion="2016-10-19" # version of the present implementation
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -345,6 +346,14 @@ self_update() {
         rm -rf $TMPDIR
         pimstaller
         exit 0
+    fi
+}
+
+about_box() {
+    if [ -n "$xdisplay" ]; then
+        zenity --width=512 --height=128 --info --text "$productname $prodversion"
+    else
+        whiptail --msgbox "$productname $prodversion" $BOXHEIGHT $(($BOXWIDTH-10))
     fi
 }
 
