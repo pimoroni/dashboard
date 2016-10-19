@@ -1,5 +1,11 @@
+pimstaller (1.0.0) UNRELEASED; urgency=low
+
+  * Zenity support with Whiptail fallback
+
+ -- Rogue Marechal <hal@pimoroni.com>  Thu, 21 Jul 2016 00:00:00 +0000
+
 pimstaller (0.9.0) UNRELEASED; urgency=low
 
   * Functional multi-level dashboard
 
- -- Phil Howard <phil@pimoroni.com>  Thu, 21 Jul 2016 00:00:00 +0000
+ -- Rogue Marechal <hal@pimoroni.com>  Thu, 21 Jul 2016 00:00:00 +0000
