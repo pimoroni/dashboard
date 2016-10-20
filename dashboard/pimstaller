@@ -42,6 +42,14 @@ osdeny=( "Darwin" "Kali" ) # list os-releases specifically disallowed
 
 # setup variables
 
+FORCE=$1
+ASK_TO_REBOOT=false
+CURRENT_SETTING=false
+MIN_INSTALL=false
+FAILED_PKG=false
+REMOVE_PKG=false
+UPDATE_DB=false
+
 DESKTOP_FILE="~/Desktop/pimstaller.desktop"
 DESKTOP_APP_FILE="/usr/share/applications/pimstaller.desktop"
 DESKTOP_ICON="/usr/share/pixmaps/pimstaller.png"
@@ -311,7 +319,8 @@ pip3_pkg_req() {
 
 get_install() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    \curl -sS get.pimoroni.com/$1 | bash
+    sysupdate && UPDATE_DB=true
+    \curl -sS get.pimoroni.com/$1 | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
 }
 
