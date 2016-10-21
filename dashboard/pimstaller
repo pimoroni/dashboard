@@ -364,7 +364,11 @@ self_update() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
     \curl -sS get.pimoroni.com/pimstaller | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
-    status_box "Restarting!"
+    if [ -n "$xdisplay" ]; then
+        status_box "Restarting!"
+    else
+    status_box "Click OK to restart the program and complete the update procedure."
+    fi
     pimstaller -y
     exit 0
 }
@@ -474,7 +478,7 @@ TITLE="Pimoroni Software Installer"
 MAINLIST="\
 1/Automation HAT/\
 2/Display-o-Tron HAT/\
-3/Explorer pHAT/\
+3/Drum HAT/\
 4/Explorer HAT/\
 5/Piano HAT/\
 6/Skywriter HAT/\
@@ -518,7 +522,7 @@ TITLE="Pimoroni Software Installer"
 MAINLIST="\
 1/Enviro pHAT/\
 2/ESP IoT pHAT/\
-3/Drum HAT/\
+3/Explorer pHAT/\
 4/Micro Dot pHAT/\
 5/pHAT DAC/\
 6/Scroll pHAT/\
@@ -712,11 +716,17 @@ if [ $debugmode == "yes" ] && [ -n "$xdisplay" ]; then
 fi; box_size
 
 if ! [ "$FORCE" == '-y' ]; then
-    info_box "This handy tool will help you get started with Pimoroni products.\n\
-Simply pick the add-on board you want to set up from the list, hit select\n\
-and we'll walk you through the install process in a few easy steps. Enjoy!\n\n\
+    info_box "\
+This handy tool will help you get started with Pimoroni products.\n\
+Simply pick the add-on board you want to set up from the list,\n\
+hit select and we'll walk you through the install process in a\n\
+few easy steps. Enjoy!\n\n\
 The Pimoroni Crew"
-    status_box "Checking for updates..."
+    if [ -n "$xdisplay" ]; then
+        status_box "Checking for updates..."
+    else
+        status_box "We will now check for available updates. Click OK."
+    fi
     self_update
 fi
 
