@@ -22,7 +22,7 @@ DISCLAIMER
 # script control variables
 
 productname="Pimstaller" # the name of the product to install
-prodversion="2016-10-19" # version of the present implementation
+prodversion="2016-10-21" # version of the present implementation
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -37,8 +37,8 @@ armv7="yes" # whether armv7 processors are supported
 armv8="yes" # whether armv8 processors are supported
 raspbianonly="no" # whether the script is allowed to run on other OSes
 osreleases=( "Raspbian" ) # list os-releases supported
-oswarning=( "Debian" "Mate" "PiTop" "Ubuntu" ) # list experimental os-releases
-osdeny=( "Darwin" "Kali" ) # list os-releases specifically disallowed
+oswarning=( "Mate" "PiTop" ) # list experimental os-releases
+osdeny=( "Darwin" "Debian" "Kali" "Ubuntu" ) # list os-releases specifically disallowed
 
 # setup variables
 
@@ -324,6 +324,15 @@ get_install() {
     read -p "Press Enter to continue..." < /dev/tty
 }
 
+launch_url() {
+    check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
+    if which xdg-open > /dev/null; then
+        xdg-open "$1"
+    else
+      error_box "There was an error attempting to launch your browser!"
+    fi
+}
+
 save_stdout() {
     savename=$(timestamp)-info.txt
     get_install $1 2>&1 | tee ~/Desktop/$savename
@@ -352,15 +361,12 @@ from where you can share it with us or with the world!"
 }
 
 self_update() {
-    if check_network; then
-        echo "Updating..."
-        export TMPDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
-        curl -sS get.pimoroni.com/pimstaller >> $TMPDIR/pimstaller
-        sudo cp $TMPDIR/pimstaller $DASHBOARD_SCRIPT
-        rm -rf $TMPDIR
-        pimstaller
-        exit 0
-    fi
+    check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
+    \curl -sS get.pimoroni.com/pimstaller | bash -s - "-y"
+    read -p "Press Enter to continue..." < /dev/tty
+    status_box "Restarting!"
+    pimstaller -y
+    exit 0
 }
 
 about_box() {
@@ -382,6 +388,14 @@ confirm_box() {
 info_box() {
     if [ -n "$xdisplay" ]; then
         zenity --info --text "$1" --height=$BOX_MIN_HEIGHT --width=$BOXWIDTH 2> /dev/null
+    else
+        whiptail --msgbox "$1" $BOXHEIGHT $(($BOXWIDTH-10))
+    fi
+}
+
+status_box() {
+    if [ -n "$xdisplay" ]; then
+        zenity --info --timeout=1 --text "$1" --height=$BOX_MIN_HEIGHT --width=$(($BOXWIDTH-256)) 2> /dev/null
     else
         whiptail --msgbox "$1" $BOXHEIGHT $(($BOXWIDTH-10))
     fi
@@ -590,10 +604,9 @@ util_menu() {
 
 TITLE="Pimoroni Software Installer"
 MAINLIST="\
-1/Gather System Info/\
-2/Take Screenshot/\
-3/Upgrade my Pi Software/\
-4/Update Product List"
+1/Gather system info/\
+2/Update my Pi software/\
+3/Help me make a screenshot"
 
     if [ -n "$xdisplay" ]; then
         UTIL=$(zenity --title="$TITLE" --list \
@@ -616,9 +629,8 @@ MAINLIST="\
     elif [ $RETURN -eq 0 ]; then
         case "$UTIL" in
             1) save_stdout cpuinfo ;;
-            2) save_snap ;;
-            3) get_install uptodate ;;
-            4) self_update ;;
+            2) get_install uptodate ;;
+            3) save_snap ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $UTIL"
     fi
@@ -697,10 +709,14 @@ if [ $debugmode == "yes" ] && [ -n "$xdisplay" ]; then
     xdisplay=""
 fi; box_size
 
-info_box "This handy tool will help you get started with Pimoroni products.\n\
+if ! [ "$FORCE" == '-y' ]; then
+    info_box "This handy tool will help you get started with Pimoroni products.\n\
 Simply pick the add-on board you want to set up from the list, hit select\n\
 and we'll walk you through the install process in a few easy steps. Enjoy!\n\n\
 The Pimoroni Crew"
+    status_box "Checking for updates..."
+    self_update
+fi
 
 listIFS="$IFS";
 IFS="/"

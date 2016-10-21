@@ -15,20 +15,20 @@ Build-Depends: debhelper (>= 9.0.0)
 Package-List:
  pimstaller deb utils extra arch=all
 Checksums-Sha1:
- 004289ef6bd83e5ac38b599e7fc1b1a0acf4718d 17780 pimstaller_1.0.0.tar.xz
+ 6c905f0ed2335174c9e78e9b7413381fbb7cf825 17880 pimstaller_1.0.0.tar.xz
 Checksums-Sha256:
- 0ae9e62eaff9473f531d2c861eb3cd72ceac5af9d4654fcaab55538a1d8e9330 17780 pimstaller_1.0.0.tar.xz
+ 9b753d9aefc5305ad64ae33a3d5160ced4ad1b256f1f7e3259d42a15298130cb 17880 pimstaller_1.0.0.tar.xz
 Files:
- e4fa93310daef5f31007c8242bb2dbea 17780 pimstaller_1.0.0.tar.xz
+ d5978764dc3c1dbadbfe02fb27a98dfe 17880 pimstaller_1.0.0.tar.xz
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQEcBAEBAgAGBQJYB6lBAAoJEMAF0IhqVInwlWsH/11/2Ol5dFJUjrCodKgZKh9P
-8MCPvQPWr6HebVxfxU1MNsTynZakiBskDWqe2D3qrEfZyA8dUP7JEa0MnlVSMQpd
-16ExEZSWRrWLbCRlOyAJhLDEi/l8z8vslKoBfv4xFXoi4Abs2oNKbG2vtZEW+GwR
-4tW8uBnNJk82Rv/ghXQaNzEhQqacoYUlQVsEPbDK709/wFzrXQXnrYfaSflXeFjZ
-y/rY64CdToihEUuGdZwJ0mB6aWhvMNLcuQW8MnLiRFNL8c2DNDzo8UHlVTXNig3O
-S/3oRT5BFJP3q6q1lX4z8MVPAiJz9OjnFIeicy2PyzIflypIH+OjgOgLhR5ITs8=
-=cYAx
+iQEcBAEBAgAGBQJYCic5AAoJEMAF0IhqVInwh4YIAIy+6Lp2a+U3L6p/uI8eJb8T
+QRtvJ3YOjwaSZ1A/JSK+RWJDa62xFcyiwQ+6wnBHshLZleI45kjwWRih4e1qRGFS
+vznV8XxIlVEwamjw5SqmW+RqhDW6h1KZuV10dPxvaXk94Ny1UacWcff1weYbdsfV
+YRzwc+BVHYgIo908eUI71HBo/gar61ddXErUi2FngnvfYJUTubbCuM/O9wGulJdx
+CemVPA2fIS1g7LnGxoXZlVTSPXQ7cNJkZfjZIg0UI7iTy/Sm62EHWxlB8UayFutf
+OXCbkOXtxRgYmZVmuOolCzA2xqj+KeTx4khFuVByUJNIjlRTJw/1KfEukHsB+EI=
+=Oxtx
 -----END PGP SIGNATURE-----
