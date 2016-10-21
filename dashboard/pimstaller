@@ -606,7 +606,8 @@ TITLE="Pimoroni Software Installer"
 MAINLIST="\
 1/Gather system info/\
 2/Update my Pi software/\
-3/Help me make a screenshot"
+3/Help me make a screenshot/\
+4/Take me to the support forums"
 
     if [ -n "$xdisplay" ]; then
         UTIL=$(zenity --title="$TITLE" --list \
@@ -631,6 +632,7 @@ MAINLIST="\
             1) save_stdout cpuinfo ;;
             2) get_install uptodate ;;
             3) save_snap ;;
+            4) launch_url "http://forums.pimoroni.com" ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $UTIL"
     fi

@@ -1,8 +1,14 @@
+pimstaller (1.0.1) UNRELEASED; urgency=low
+
+  * link to support forums added
+
+ -- Rogue Marechal <hal@pimoroni.com>  Fri, 21 Oct 2016 00:00:00 +0000
+
 pimstaller (1.0.0) UNRELEASED; urgency=low
 
   * Zenity support with Whiptail fallback
 
- -- Rogue Marechal <hal@pimoroni.com>  Thu, 21 Jul 2016 00:00:00 +0000
+ -- Rogue Marechal <hal@pimoroni.com>  Wed, 19 Oct 2016 00:00:00 +0000
 
 pimstaller (0.9.0) UNRELEASED; urgency=low
 
