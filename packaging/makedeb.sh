@@ -5,6 +5,7 @@ setup="yes"
 cleanup="yes"
 pkgfiles=( "build" "changes" "deb" "dsc" "tar.xz" )
 
+./makelog.sh
 
 if [ $gettools == "yes" ]; then
     sudo apt-get update && sudo apt-get install build-essential debhelper devscripts dh-make dput gnupg

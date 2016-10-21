@@ -1,0 +1,57 @@
+ dpkg-buildpackage -rfakeroot -D -us -uc
+dpkg-buildpackage: source package pimstaller
+dpkg-buildpackage: source version 1.0.1
+dpkg-buildpackage: source distribution UNRELEASED
+dpkg-buildpackage: source changed by Rogue Marechal <hal@pimoroni.com>
+ dpkg-source --before-build dashboard
+dpkg-buildpackage: host architecture armhf
+ fakeroot debian/rules clean
+dh clean 
+   dh_testdir
+   dh_auto_clean
+   dh_clean
+ dpkg-source -b dashboard
+dpkg-source: info: using source format `3.0 (native)'
+dpkg-source: info: building pimstaller in pimstaller_1.0.1.tar.xz
+dpkg-source: info: building pimstaller in pimstaller_1.0.1.dsc
+ debian/rules build
+dh build 
+   dh_testdir
+   dh_auto_configure
+   dh_auto_build
+   dh_auto_test
+ fakeroot debian/rules binary
+dh binary 
+   dh_testroot
+   dh_prep
+   dh_auto_install
+   dh_install
+   dh_installdocs
+   dh_installchangelogs
+   debian/rules override_dh_installinit
+make[1]: Entering directory '/home/pi/GitHub/pimstaller/dashboard'
+dh_installinit --no-start
+make[1]: Leaving directory '/home/pi/GitHub/pimstaller/dashboard'
+   dh_perl
+   dh_link
+   dh_compress
+   dh_fixperms
+   dh_installdeb
+   dh_gencontrol
+   dh_md5sums
+   dh_builddeb
+dpkg-deb: building package `pimstaller' in `../pimstaller_1.0.1_all.deb'.
+ dpkg-genchanges  >../pimstaller_1.0.1_armhf.changes
+dpkg-genchanges: including full source code in upload
+ dpkg-source --after-build dashboard
+dpkg-buildpackage: full upload; Debian-native package (full source is included)
+Now running lintian...
+W: pimstaller: binary-without-manpage usr/bin/pimstaller
+W: pimstaller: desktop-command-not-in-package usr/share/applications/pimstaller.desktop lxterminal
+Finished running lintian.
+Now signing changes and any dsc files...
+ signfile pimstaller_1.0.1.dsc 43E28BC1
+
+ signfile pimstaller_1.0.1_armhf.changes 43E28BC1
+
+Successfully signed dsc and changes files
