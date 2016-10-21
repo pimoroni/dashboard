@@ -50,8 +50,8 @@ W: pimstaller: binary-without-manpage usr/bin/pimstaller
 W: pimstaller: desktop-command-not-in-package usr/share/applications/pimstaller.desktop lxterminal
 Finished running lintian.
 Now signing changes and any dsc files...
- signfile pimstaller_1.0.0.dsc Rogue Marechal <hal@pimoroni.com>
+ signfile pimstaller_1.0.0.dsc 43E28BC1
 
- signfile pimstaller_1.0.0_armhf.changes Rogue Marechal <hal@pimoroni.com>
+ signfile pimstaller_1.0.0_armhf.changes 43E28BC1
 
 Successfully signed dsc and changes files
