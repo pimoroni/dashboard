@@ -334,10 +334,16 @@ launch_url() {
 }
 
 save_stdout() {
-    savename=$(timestamp)-info.txt
-    get_install $1 2>&1 | tee ~/Desktop/$savename
-    sed -i "/Press Enter/d" ~/Desktop/$savename
-    info_box "Success, your system info has been saved to the Desktop!"
+    savename=$(timestamp)-info.txt    
+    if [ -n "$xdisplay" ]; then
+        get_install $1 2>&1 | tee ~/Desktop/$savename
+        sed -i "/Press Enter/d" ~/Desktop/$savename
+        info_box "Your system info has been saved to the Desktop!"
+    else
+        get_install $1 2>&1 | tee ~/$savename
+        sed -i "/Press Enter/d" ~/$savename
+        info_box "Your system info has been saved to your home folder!"
+    fi
 }
 
 save_snap() {
@@ -367,7 +373,7 @@ self_update() {
     if [ -n "$xdisplay" ]; then
         status_box "Restarting!"
     else
-    status_box "Click OK to restart the program and complete the update procedure."
+        status_box "Click OK to restart the program and complete the update procedure."
     fi
     pimstaller -y
     exit 0
