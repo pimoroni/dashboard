@@ -22,7 +22,7 @@ DISCLAIMER
 # script control variables
 
 productname="Pimstaller" # the name of the product to install
-prodversion="2016-10-21" # version of the present implementation
+prodversion="2016-10-25" # version of the present implementation
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -255,7 +255,7 @@ timestamp() {
 }
 
 check_network() {
-    sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` &> /dev/null && return 0 || return 1
+    sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3 | head -n 1` &> /dev/null && return 0 || return 1
 }
 
 apt_pkg_req() {
@@ -334,7 +334,7 @@ launch_url() {
 }
 
 save_stdout() {
-    savename=$(timestamp)-info.txt    
+    savename=$(timestamp)-info.txt
     if [ -n "$xdisplay" ]; then
         get_install $1 2>&1 | tee ~/Desktop/$savename
         sed -i "/Press Enter/d" ~/Desktop/$savename
