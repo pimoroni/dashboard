@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-12" # version of the present implementation
-prodbuild="1615" # build for testing purposes
+prodbuild="1710" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -311,7 +311,7 @@ apt_pkg_install() {
 }
 
 apt_deb_chk() {
-    sudo apt-get --yes install "$1" 2> /dev/null | grep -e "$1 is already the newest" -e "Setting up $1" | sed "s|.$||" || return 1
+    sudo apt-get --yes install "$1" 2> /dev/null | grep -e "$1 is already the newest" -e "Setting up $1" || return 1
 }
 
 apt_deb_install() {
@@ -375,7 +375,8 @@ lib_chk() {
         else
             if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "$libdeb"; then
                 if ! apt_deb_chk "python-$libdeb"; then
-                    PIP2_MSG=$(sudo $PIP2_BIN install -U "$libdeb" | grep  -e "Successfully installed $libdeb" -e "already up-to-date: $libdeb")
+                    echo "this is happening"
+                    PIP2_MSG=$(sudo $PIP2_BIN install -U "$libdeb" | grep -e "Successfully installed $libdeb" -e "already up-to-date: $libdeb")
                     if [[ "$PIP2_MSG" == *"up-to-date"* ]]; then
                         echo "$PIP2_MSG"
                     else
@@ -385,7 +386,7 @@ lib_chk() {
             fi
             if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "$libdeb"; then
                 if ! apt_deb_chk "python3-$libdeb"; then
-                    PIP3_MSG=$(sudo $PIP3_BIN install -U "$libdeb" | grep  -e "Successfully installed $libdeb" -e "already up-to-date: $libdeb")
+                    PIP3_MSG=$(sudo $PIP3_BIN install -U "$libdeb" | grep -e "Successfully installed $libdeb" -e "already up-to-date: $libdeb")
                     if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
                         echo "$PIP3_MSG"
                     else
