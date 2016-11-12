@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-12" # version of the present implementation
-prodbuild="2000" # build for testing purposes
+prodbuild="1400" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -40,6 +40,29 @@ raspbianonly="no" # whether the script is allowed to run on other OSes
 osreleases=( "Raspbian" "Kano" "Mate" "PiTop" ) # list os-releases supported
 oswarning=( "Debian" ) # list experimental os-releases
 osdeny=( "Darwin" "Kali" "Ubuntu" ) # list os-releases specifically disallowed
+
+deblist=( \
+"automationhat" \
+"blinkt" \
+"drumhat" \
+"envirophat" \
+"explorerhat" \
+"flotilla" \
+"microdotphat" \
+"mote" \
+"motephat" \
+"pantilthat" \
+"pianohat" \
+"pibrella" \
+"picadehat" \
+"piglow" \
+"scrollphat" \
+"unicornhat" )
+
+addlist=( \
+"displayotron" \
+"propellerhat" \
+"skywriterhat" )
 
 # setup variables
 
@@ -287,8 +310,7 @@ apt_pkg_install() {
 }
 
 apt_deb_chk() {
-    sudo apt-get --yes install "$1" | grep "already the newest"
-    newline
+    sudo apt-get --yes install "$1" 2> /dev/null | grep -e "$1 is already the newest" -e "Setting up $1" || return 1
 }
 
 apt_deb_install() {
@@ -343,16 +365,26 @@ pip3_pkg_req() {
 
 lib_chk() {
     pip2_chk && pip3_chk
-    if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "$1"; then
-        if ! apt_deb_chk "python-$1"; then
-            inform "$1 for Python 2 is now the latest and greatest!"
+    echo "Checking for installed libraries..."    
+    for libdeb in ${deblist[@]}; do
+        echo "$libdeb..."
+        if pip2_pkg_req "$libdeb" && pip3_pkg_req "$libdeb"; then
+        echo "$libdeb is not installed"
+        else
+            if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "$libdeb"; then
+                if ! apt_deb_chk "python-$libdeb"; then
+                    sudo $PIP2_BIN install -U "$libdeb" | grep  -e "Successfully installed $libdeb" -e "already up-to-date: $libdeb"
+    
+                fi
+            fi
+            if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "$libdeb"; then
+                if ! apt_deb_chk "python3-$libdeb"; then
+                    sudo $PIP3_BIN install -U "$libdeb" | grep  -e "Successfully installed $libdeb" -e "already up-to-date: $libdeb"
+                fi
+            fi
         fi
-    fi
-    if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "$1"; then
-        if ! apt_deb_chk "python3-$1"; then
-            inform "$1 for Python 3 is now the latest and greatest!"
-        fi
-    fi
+    done
+    newline && inform "all libraries are now up-to-date!" && newline
 }
 
 get_install() {
@@ -360,7 +392,7 @@ get_install() {
     if [ "$1" != diagnostic ];then
         sysupdate && UPDATE_DB=true
     fi
-    \curl -sS get.pimoroni.com/$1 | bash -s - "-y"
+    curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
 }
 
@@ -408,7 +440,7 @@ from where you can share it with us or with the world!"
 
 self_update() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    \curl -sS get.pimoroni.com/pimstaller | bash -s - "-y"
+    curl -sS https://get.pimoroni.com/pimstaller | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
     if [ -n "$xdisplay" ]; then
         status_box "Restarting!"
@@ -514,7 +546,7 @@ MAINLIST="\
             1) hat_menu ;;
             2) phat_menu ;;
             3) board_menu ;;
-            4) lib_chk blinkt ;;
+            4) lib_chk ;;
             5) launch_url "http://docs.pimoroni.com/blinkt" ;;
             6) util_menu ;;
             *) error_box "Error: unrecognized option";;
