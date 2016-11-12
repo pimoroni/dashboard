@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-12" # version of the present implementation
-prodbuild="1715" # build for testing purposes
+prodbuild="1740" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -50,10 +50,8 @@ deblist=( \
 "microdotphat" \
 "mote" \
 "motephat" \
-"pantilthat" \
 "pianohat" \
 "pibrella" \
-"picadehat" \
 "piglow" \
 "scrollphat" \
 "unicornhat" )
@@ -365,8 +363,8 @@ pip3_pkg_req() {
 }
 
 lib_chk() {
+    newline && pip2_chk && pip3_chk
     sysupdate && UPDATE_DB=true
-    pip2_chk && pip3_chk
     echo "Checking for installed libraries..."    
     for libdeb in ${deblist[@]}; do
         echo "$libdeb..."
@@ -375,21 +373,21 @@ lib_chk() {
         else
             if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "$libdeb"; then
                 if ! apt_deb_chk "python-$libdeb"; then
-                    PIP2_MSG=$(sudo $PIP2_BIN install -U "$libdeb" | grep -e "Successfully installed $libdeb" -e "already up-to-date: $libdeb")
+                    PIP2_MSG=$(sudo $PIP2_BIN install -U "$libdeb" | grep -e "installed $libdeb" -e "up-to-date: $libdeb")
                     if [[ "$PIP2_MSG" == *"up-to-date"* ]]; then
-                        echo "$PIP2_MSG"
+                        echo "$libdeb for Python 2 already up-to-date"
                     else
-                        echo "$PIP2_MSG for Python 2" | sed "s|installed|upgraded|"
+                        echo "Successfully upgraded $libdeb for Python 2"
                     fi                   
                 fi
             fi
             if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "$libdeb"; then
                 if ! apt_deb_chk "python3-$libdeb"; then
-                    PIP3_MSG=$(sudo $PIP3_BIN install -U "$libdeb" | grep -e "Successfully installed $libdeb" -e "already up-to-date: $libdeb")
+                    PIP3_MSG=$(sudo $PIP3_BIN install -U "$libdeb" | grep -e "installed $libdeb" -e "up-to-date: $libdeb")
                     if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
-                        echo "$PIP3_MSG"
+                        echo "$libdeb for Python 3 already up-to-date"
                     else
-                        echo "$PIP3_MSG for Python 3" | sed "s|installed|upgraded|"
+                        echo "Successfully upgraded $libdeb for Python 3"
                     fi                   
                 fi
             fi
@@ -558,7 +556,7 @@ MAINLIST="\
             2) phat_menu ;;
             3) board_menu ;;
             4) lib_chk ;;
-            5) launch_url "http://docs.pimoroni.com/blinkt" ;;
+            5) launch_url "http://docs.pimoroni.com" ;;
             6) util_menu ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $MAIN"
@@ -573,11 +571,9 @@ MAINLIST="\
 2/Display-o-Tron HAT/\
 3/Drum HAT/\
 4/Explorer HAT/\
-5/Pan-Tilt HAT/\
-6/Piano HAT/\
-7/Picade HAT/\
-8/Skywriter HAT/\
-9/Unicorn HAT"
+5/Piano HAT/\
+6/Skywriter HAT/\
+7/Unicorn HAT"
 
     if [ -n "$xdisplay" ]; then
         HAT=$(zenity --title="$TITLE" --list \
@@ -603,11 +599,9 @@ MAINLIST="\
             2) get_install displayotron ;;
             3) get_install drumhat ;;
             4) get_install explorerhat ;;
-            5) get_install pantilthat ;;
-            6) get_install pianohat ;;
-            7) get_install picadehat ;;
-            8) get_install skywriter ;;
-            9) get_install unicornhat ;;
+            5) get_install pianohat ;;
+            6) get_install skywriter ;;
+            7) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $HAT"
     fi
