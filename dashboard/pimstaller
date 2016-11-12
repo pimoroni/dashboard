@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-12" # version of the present implementation
-prodbuild="1435" # build for testing purposes
+prodbuild="1615" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -47,7 +47,6 @@ deblist=( \
 "drumhat" \
 "envirophat" \
 "explorerhat" \
-"flotilla" \
 "microdotphat" \
 "mote" \
 "motephat" \
@@ -61,6 +60,7 @@ deblist=( \
 
 addlist=( \
 "displayotron" \
+"flotilla" \
 "propellerhat" \
 "skywriterhat" )
 
@@ -364,6 +364,7 @@ pip3_pkg_req() {
 }
 
 lib_chk() {
+    sysupdate && UPDATE_DB=true
     pip2_chk && pip3_chk
     echo "Checking for installed libraries..."    
     for libdeb in ${deblist[@]}; do
