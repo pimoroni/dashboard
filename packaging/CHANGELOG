@@ -1,3 +1,12 @@
+pimstaller (1.0.2) UNRELEASED; urgency=low
+
+  * can probe system and update all installed libs
+  * denies execution as superuser
+  * link to doc portal added
+  * about box added
+
+ -- Rogue Marechal <hal@pimoroni.com>  Sun, 13 Nov 2016 00:00:00 +0000
+
 pimstaller (1.0.1) UNRELEASED; urgency=low
 
   * link to support forums added
