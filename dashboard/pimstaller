@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimstaller" # the name of the product to install
-prodversion="2016-11-12" # version of the present implementation
-prodbuild="1740" # build for testing purposes
+prodversion="2016-11-13" # version of the present implementation
+prodbuild="0135" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -41,26 +41,23 @@ osreleases=( "Raspbian" "Kano" "Mate" "PiTop" ) # list os-releases supported
 oswarning=( "Debian" ) # list experimental os-releases
 osdeny=( "Darwin" "Kali" "Ubuntu" ) # list os-releases specifically disallowed
 
-deblist=( \
-"automationhat" \
-"blinkt" \
-"drumhat" \
-"envirophat" \
-"explorerhat" \
-"microdotphat" \
-"mote" \
-"motephat" \
-"pianohat" \
-"pibrella" \
-"piglow" \
-"scrollphat" \
-"unicornhat" )
-
-addlist=( \
-"displayotron" \
-"flotilla" \
-"propellerhat" \
-"skywriterhat" )
+declare -A deblibpairs=( \
+["automationhat"]="automationhat" \
+["blinkt"]="blinkt" \
+["displayotron"]="dot3k" \
+["drumhat"]="drumhat" \
+["envirophat"]="envirophat" \
+["explorerhat"]="explorerhat" \
+["microdotphat"]="microdotphat" \
+["mote"]="mote" \
+["motephat"]="motephat" \
+["pianohat"]="pianohat" \
+["pibrella"]="pibrella" \
+["piglow"]="piglow" \
+["propellerhat"]="p1" \
+["scrollphat"]="scrollphat" \
+["skywriterhat"]="skywriter" \
+["unicornhat"]="unicornhat" )
 
 # setup variables
 
@@ -365,31 +362,28 @@ pip3_pkg_req() {
 lib_chk() {
     newline && pip2_chk && pip3_chk
     sysupdate && UPDATE_DB=true
-    echo "Checking for installed libraries..."    
-    for libdeb in ${deblist[@]}; do
-        echo "$libdeb..."
-        if pip2_pkg_req "$libdeb" && pip3_pkg_req "$libdeb"; then
-        echo "$libdeb is not installed"
-        else
-            if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "$libdeb"; then
-                if ! apt_deb_chk "python-$libdeb"; then
-                    PIP2_MSG=$(sudo $PIP2_BIN install -U "$libdeb" | grep -e "installed $libdeb" -e "up-to-date: $libdeb")
-                    if [[ "$PIP2_MSG" == *"up-to-date"* ]]; then
-                        echo "$libdeb for Python 2 already up-to-date"
-                    else
-                        echo "Successfully upgraded $libdeb for Python 2"
-                    fi                   
-                fi
+    echo "Checking for installed libraries..."
+    for debpkg in "${!deblibpairs[@]}"; do
+        if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "${deblibpairs[$debpkg]}"; then
+            if ! apt_deb_chk "python-$debpkg"; then
+                PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
+                | grep -e "installed ${deblibpairs[$debpkg]}" -e "up-to-date: ${deblibpairs[$debpkg]}")
+                if [[ "$PIP2_MSG" == *"up-to-date"* ]]; then
+                    echo "${deblibpairs[$debpkg]} for Python 2 already up-to-date"
+                else
+                    echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 2"
+                fi                   
             fi
-            if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "$libdeb"; then
-                if ! apt_deb_chk "python3-$libdeb"; then
-                    PIP3_MSG=$(sudo $PIP3_BIN install -U "$libdeb" | grep -e "installed $libdeb" -e "up-to-date: $libdeb")
-                    if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
-                        echo "$libdeb for Python 3 already up-to-date"
-                    else
-                        echo "Successfully upgraded $libdeb for Python 3"
-                    fi                   
-                fi
+        fi
+        if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "${deblibpairs[$debpkg]}"; then
+            if ! apt_deb_chk "python3-$debpkg"; then
+                PIP2_MSG=$(sudo $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
+                | grep -e "installed ${deblibpairs[$debpkg]}" -e "up-to-date: ${deblibpairs[$debpkg]}")
+                if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
+                    echo "${deblibpairs[$debpkg]} for Python 3 already up-to-date"
+                else
+                    echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 3"
+                fi                   
             fi
         fi
     done
