@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-13" # version of the present implementation
-prodbuild="0135" # build for testing purposes
+prodbuild="1415" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -114,6 +114,14 @@ newline() {
     echo ""
 }
 
+progress() {
+    count=0
+    until [ $count -eq $1 ]; do
+        echo -n "..." && sleep 1
+        ((count++))
+    done
+    echo
+}
 sudocheck() {
     if [ $(id -u) -ne 0 ]; then
         echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
@@ -128,9 +136,9 @@ sysclean() {
 
 sysupdate() {
     if ! $UPDATE_DB; then
-        echo "Updating apt indexes..."
+        echo "Updating apt indexes..." && progress 4
         sudo apt-get update | grep -e "Reading package lists" || { warning "Apt failed to update indexes!" && exit 1; }
-        UPDATE_DB=true
+        progress 4 UPDATE_DB=true
     fi
 }
 
@@ -311,7 +319,14 @@ apt_deb_chk() {
 
 apt_deb_install() {
     echo "Installing $1..."
-    sudo apt-get --yes install "$1" 1> /dev/null || inform "Apt failed to install $1!\nFalling back on pypi..."
+    if [[ "$1" != *".deb"* ]]; then
+        sudo apt-get --yes install "$1" | grep -e "$1 is already the newest" -e "Setting up $1" || inform "Apt failed to install $1!\nFalling back on pypi..."
+    else
+        DEBDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
+        cd $DEBDIR
+        wget "$GETPOOL/resources/$1" &> /dev/null
+        sudo dpkg -i "$DEBDIR/$1" | grep "Installing $1"
+    fi
     newline
 }
 
@@ -364,6 +379,7 @@ lib_chk() {
     sysupdate && UPDATE_DB=true
     echo "Checking for installed libraries..."
     for debpkg in "${!deblibpairs[@]}"; do
+        progress 4 &
         if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python-$debpkg"; then
                 PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
@@ -377,7 +393,7 @@ lib_chk() {
         fi
         if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python3-$debpkg"; then
-                PIP2_MSG=$(sudo $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
+                PIP3_MSG=$(sudo $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -e "installed ${deblibpairs[$debpkg]}" -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
                     echo "${deblibpairs[$debpkg]} for Python 3 already up-to-date"
