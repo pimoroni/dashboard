@@ -3,7 +3,7 @@
 # script control variables
 
 reponame="" # leave this blank for auto-detection
-libname="" # leave this blank for auto-detection
+exename="pimstaller" # leave this blank for auto-detection
 packagename="" # leave this blank for auto-selection
 
 debianlog="debian/changelog"
@@ -38,10 +38,10 @@ newline() {
 
 # assessing repo and library variables
 
-if [ -z "$reponame" ] || [ -z "$libname" ]; then
-    inform "detecting reponame and libname..."
+if [ -z "$reponame" ] || [ -z "$exename" ]; then
+    inform "detecting reponame and exename..."
 else
-    inform "using reponame and libname overrides"
+    inform "using reponame and exename overrides"
 fi
 
 if [ -z "$reponame" ]; then
@@ -55,30 +55,29 @@ if [ -z "$reponame" ]; then
     reponame=$(echo "$reponame" | tr "[A-Z]" "[a-z]")
 fi
 
-if [ -z "$libname" ]; then
+if [ -z "$exename" ]; then
     cd "$libdir"
-    libname=$(grep "name" setup.py | tr -d "[:space:]" | cut -c 7- | rev | cut -c 3- | rev)
-    libname=$(echo "$libname" | tr "[A-Z]" "[a-z]") && cd "$debdir"
+    exename=$(grep "name" setup.py | tr -d "[:space:]" | cut -c 7- | rev | cut -c 3- | rev)
+    exename=$(echo "$exename" | tr "[A-Z]" "[a-z]") && cd "$debdir"
 fi
 
 if [ -z "$packagename" ]; then
-    packagename="$libname"
+    packagename="$exename"
 fi
 
-echo "reponame is $reponame and libname is $libname"
-echo "output packages will be python-$packagename and python3-$packagename"
+echo "reponame is $reponame and exename is $exename"
+echo "output packages will be $packagename"
 
 # checking generating changelog file
 
 ./makelog.sh
-version=$(head -n 1 "$libdir/CHANGELOG.txt")
-echo "building $libname version $version"
+echo "building $exename..."
 
 # checking debian/changelog file
 
 inform "checking debian/changelog file..."
 
-if ! head -n 1 $debianlog | grep "$libname" &> /dev/null; then
+if ! head -n 1 $debianlog | grep "$exename" &> /dev/null; then
     warning "library not mentioned in header!" && FLAG=true
 elif head -n 1 $debianlog | grep "UNRELEASED"; then
     warning "this changelog is not going to generate a release!"
@@ -93,7 +92,7 @@ if ! grep "^Source" $debcopyright | grep "$reponame" &> /dev/null; then
     warning "$(grep "^Source" $debcopyright)" && FLAG=true
 fi
 
-if ! grep "^Upstream-Name" $debcopyright | grep "$libname" &> /dev/null; then
+if ! grep "^Upstream-Name" $debcopyright | grep "$exename" &> /dev/null; then
     warning "$(grep "^Upstream-Name" $debcopyright)" && FLAG=true
 fi
 
@@ -101,7 +100,7 @@ fi
 
 inform "checking debian/control file..."
 
-if ! grep "^Source" $debcontrol | grep "$libname" &> /dev/null; then
+if ! grep "^Source" $debcontrol | grep "$exename" &> /dev/null; then
     warning "$(grep "^Source" $debcontrol)" && FLAG=true
 fi
 
@@ -109,12 +108,8 @@ if ! grep "^Homepage" $debcontrol | grep "$reponame" &> /dev/null; then
     warning "$(grep "^Homepage" $debcontrol)" && FLAG=true
 fi
 
-if ! grep "^Package: python-$packagename" $debcontrol &> /dev/null; then
+if ! grep "^Package: $packagename" $debcontrol &> /dev/null; then
     warning "$(grep "^Package: python-" $debcontrol)" && FLAG=true
-fi
-
-if ! grep "^Package: python3-$packagename" $debcontrol &> /dev/null; then
-    warning "$(grep "^Package: python3-" $debcontrol)" && FLAG=true
 fi
 
 if ! grep "^Priority: extra" $debcontrol &> /dev/null; then
@@ -126,19 +121,15 @@ fi
 
 inform "checking debian/rules file..."
 
-if ! grep "debian/python-$packagename" $debrules &> /dev/null; then
-    warning "$(grep "debian/python-" $debrules)" && FLAG=true
-fi
-
-if ! grep "debian/python3-$packagename" $debrules &> /dev/null; then
-    warning "$(grep "debian/python3-" $debrules)" && FLAG=true
+if ! grep "dh_installinit" $debrules &> /dev/null; then
+    warning "no dh_installinit override" && FLAG=true
 fi
 
 # checking debian/README file
 
 inform "checking debian/readme file..."
 
-if ! grep -e "$libname" -e "$reponame" $debreadme &> /dev/null; then
+if ! grep -e "$exename" -e "$reponame" $debreadme &> /dev/null; then
     warning "README does not seem to mention product, repo or lib!" && FLAG=true
 fi
 

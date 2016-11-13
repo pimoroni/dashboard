@@ -2,9 +2,10 @@
 # -*- makefile -*-
 
 #export DH_VERBOSE=1
-
-override_dh_installinit:
-	dh_installinit --no-start
+export DH_OPTIONS
 
 %:
 	dh $@ 
+
+override_dh_installinit:
+	dh_installinit --no-start
