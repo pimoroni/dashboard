@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-14" # version of the present implementation
-prodbuild="2200" # build for testing purposes
+prodbuild="2235" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -344,7 +344,7 @@ pip2_chk() {
 }
 
 pip2_pkg_req() {
-    PIP2_CHK=$($PIP2_BIN search "$1" | grep "INSTALLED")
+    PIP2_CHK=$($PIP2_BIN list | grep -i "$1")
 
     if [ "" == "$PIP2_CHK" ]; then
         true
@@ -366,7 +366,7 @@ pip3_chk() {
 }
 
 pip3_pkg_req() {
-    PIP3_CHK=$($PIP3_BIN search "$1" | grep "INSTALLED")
+    PIP3_CHK=$($PIP3_BIN list | grep -i "$1")
 
     if [ "" == "$PIP3_CHK" ]; then
         true
