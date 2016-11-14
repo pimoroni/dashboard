@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-14" # version of the present implementation
-prodbuild="1710" # build for testing purposes
+prodbuild="2200" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -442,7 +442,7 @@ save_snap() {
     if ! command -v scrot > /dev/null; then
         warning "scrot is not installed"
         echo "try: sudo apt-get install scrot"
-    elif [ -z "$DISPLAY" ]; then
+    elif [ -z "$xdisplay" ]; then
         error_box "X is not running, we can't take screenshots, sorry!"
     else
         info_box "\
@@ -821,9 +821,12 @@ home_dir && WORKING_DIR="$USER_HOME/Pimoroni"
 cd $WORKING_DIR
 
 xdisplay="$DISPLAY"
-if [ $debugmode == "yes" ] && [ -n "$xdisplay" ]; then
+
+if ! command -v zenity > /dev/null || [ $debugmode == "yes" ]; then
     xdisplay=""
-fi; box_size
+fi
+
+box_size
 
 if ! [ "$FORCE" == '-y' ]; then
     info_box "\
