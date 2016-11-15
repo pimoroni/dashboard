@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-15" # version of the present implementation
-prodbuild="0120" # build for testing purposes
+prodbuild="1130" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -331,6 +331,18 @@ apt_deb_install() {
     newline
 }
 
+get_install() {
+    check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
+    if [ "$1" != diagnostic ];then
+        sysupdate && UPDATE_DB=true
+    fi
+    if ! command -v curl > /dev/null; then
+        apt_pkg_install "curl"
+    fi
+    \curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
+    read -p "Press Enter to continue..." < /dev/tty
+}
+
 pip2_chk() {
     if command -v pip2 > /dev/null; then
         PIP2_BIN="pip2"
@@ -409,18 +421,6 @@ lib_chk() {
         fi
     done
     newline && inform "all libraries are now up-to-date!" && newline
-}
-
-get_install() {
-    check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    if [ "$1" != diagnostic ];then
-        sysupdate && UPDATE_DB=true
-    fi
-    if ! command -v curl > /dev/null; then
-        apt_pkg_install "curl"
-    fi
-    \curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
-    read -p "Press Enter to continue..." < /dev/tty
 }
 
 launch_url() {
