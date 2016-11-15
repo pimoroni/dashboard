@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-15" # version of the present implementation
-prodbuild="0005" # build for testing purposes
+prodbuild="0010" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -391,7 +391,7 @@ lib_chk() {
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 2"
                 fi
 			else
-		        sudo $PIP2_BIN uninstall -y "$debpkg"
+		        sudo $PIP2_BIN uninstall -y "$debpkg" &> /dev/null
             fi
         fi
         if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "${deblibpairs[$debpkg]}"; then
@@ -404,7 +404,7 @@ lib_chk() {
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 3"
                 fi
 			else
-		        sudo $PIP3_BIN uninstall -y "$debpkg"
+		        sudo $PIP3_BIN uninstall -y "$debpkg" &> /dev/null
             fi
         fi
     done
