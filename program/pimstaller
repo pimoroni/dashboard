@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimstaller" # the name of the product to install
-prodversion="2016-11-14" # version of the present implementation
-prodbuild="2235" # build for testing purposes
+prodversion="2016-11-15" # version of the present implementation
+prodbuild="0005" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -279,7 +279,7 @@ space_chk() {
             newline
             warning  "There is not enough space left to proceed with  installation"
             if confirm "Would you like to attempt to expand your filesystem?"; then
-                \curl -sS $GETPOOL/expandfs | sudo bash
+                curl -sS $GETPOOL/expandfs | sudo bash
                 exit 1
             else
                 newline && exit 1
@@ -344,7 +344,7 @@ pip2_chk() {
 }
 
 pip2_pkg_req() {
-    PIP2_CHK=$($PIP2_BIN list | grep -i "$1")
+    PIP2_CHK=$($PIP2_BIN list 2> /dev/null | grep -i "$1")
 
     if [ "" == "$PIP2_CHK" ]; then
         true
@@ -366,7 +366,7 @@ pip3_chk() {
 }
 
 pip3_pkg_req() {
-    PIP3_CHK=$($PIP3_BIN list | grep -i "$1")
+    PIP3_CHK=$($PIP3_BIN list 2> /dev/null | grep -i "$1")
 
     if [ "" == "$PIP3_CHK" ]; then
         true
@@ -390,6 +390,8 @@ lib_chk() {
                 else
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 2"
                 fi
+			else
+		        sudo $PIP2_BIN uninstall -y "$debpkg"
             fi
         fi
         if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "${deblibpairs[$debpkg]}"; then
@@ -401,6 +403,8 @@ lib_chk() {
                 else
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 3"
                 fi
+			else
+		        sudo $PIP3_BIN uninstall -y "$debpkg"
             fi
         fi
     done
@@ -412,6 +416,9 @@ get_install() {
     if [ "$1" != diagnostic ];then
         sysupdate && UPDATE_DB=true
     fi
+    if ! command -v curl > /dev/null; then
+		apt_pkg_install "curl"
+	fi
     curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
 }
