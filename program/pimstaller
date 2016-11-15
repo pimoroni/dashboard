@@ -137,9 +137,9 @@ sysclean() {
 
 sysupdate() {
     if ! $UPDATE_DB; then
-        echo "Updating apt indexes..." && progress 3 &
+        echo "Updating apt indexes..." && progress 4 &
         sudo apt-get update | grep -e "Reading package lists" || { warning "Apt failed to update indexes!" && exit 1; }
-        progress 3 UPDATE_DB=true
+        progress 4 UPDATE_DB=true
     fi
 }
 
@@ -380,7 +380,7 @@ lib_chk() {
     sysupdate && UPDATE_DB=true
     echo "Checking for installed libraries..."
     for debpkg in "${!deblibpairs[@]}"; do
-        progress 3 &
+        progress 2 && progress 2 &
         if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python-$debpkg"; then
                 PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
