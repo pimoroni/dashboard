@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimstaller" # the name of the product to install
-prodversion="2016-11-13" # version of the present implementation
-prodbuild="1500" # build for testing purposes
+prodversion="2016-11-15" # version of the present implementation
+prodbuild="0120" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -51,6 +51,7 @@ declare -A deblibpairs=( \
 ["microdotphat"]="microdotphat" \
 ["mote"]="mote" \
 ["motephat"]="motephat" \
+["pantilthat"]="pantilthat" \
 ["pianohat"]="pianohat" \
 ["pibrella"]="pibrella" \
 ["piglow"]="piglow" \
@@ -138,7 +139,7 @@ sysupdate() {
     if ! $UPDATE_DB; then
         echo "Updating apt indexes..." && progress 3 &
         sudo apt-get update | grep -e "Reading package lists" || { warning "Apt failed to update indexes!" && exit 1; }
-        progress 3 UPDATE_DB=true
+        progress 3 && UPDATE_DB=true
     fi
 }
 
@@ -343,7 +344,7 @@ pip2_chk() {
 }
 
 pip2_pkg_req() {
-    PIP2_CHK=$($PIP2_BIN search $1 | grep INSTALLED)
+    PIP2_CHK=$($PIP2_BIN list 2> /dev/null | grep -i "$1")
 
     if [ "" == "$PIP2_CHK" ]; then
         true
@@ -365,7 +366,7 @@ pip3_chk() {
 }
 
 pip3_pkg_req() {
-    PIP3_CHK=$($PIP3_BIN search $1 | grep INSTALLED)
+    PIP3_CHK=$($PIP3_BIN list 2> /dev/null | grep -i "$1")
 
     if [ "" == "$PIP3_CHK" ]; then
         true
@@ -379,27 +380,31 @@ lib_chk() {
     sysupdate && UPDATE_DB=true
     echo "Checking for installed libraries..."
     for debpkg in "${!deblibpairs[@]}"; do
-        progress 3 &
+        progress 3
         if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python-$debpkg"; then
                 PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
-                | grep -e "installed ${deblibpairs[$debpkg]}" -e "up-to-date: ${deblibpairs[$debpkg]}")
+                | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP2_MSG" == *"up-to-date"* ]]; then
-                    echo "${deblibpairs[$debpkg]} for Python 2 already up-to-date"
+                    echo "${deblibpairs[$debpkg]} for Python 2 is already the newest version."
                 else
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 2"
-                fi                   
+                fi
+            else
+                sudo $PIP2_BIN uninstall -y "$debpkg" &> /dev/null
             fi
         fi
         if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python3-$debpkg"; then
                 PIP3_MSG=$(sudo $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
-                | grep -e "installed ${deblibpairs[$debpkg]}" -e "up-to-date: ${deblibpairs[$debpkg]}")
+                | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
-                    echo "${deblibpairs[$debpkg]} for Python 3 already up-to-date"
+                    echo "${deblibpairs[$debpkg]} for Python 3 is already the newest version."
                 else
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 3"
-                fi                   
+                fi
+            else
+                sudo $PIP3_BIN uninstall -y "$debpkg" &> /dev/null
             fi
         fi
     done
@@ -411,7 +416,10 @@ get_install() {
     if [ "$1" != diagnostic ];then
         sysupdate && UPDATE_DB=true
     fi
-    curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
+    if ! command -v curl > /dev/null; then
+        apt_pkg_install "curl"
+    fi
+    \curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
 }
 
@@ -441,7 +449,7 @@ save_snap() {
     if ! command -v scrot > /dev/null; then
         warning "scrot is not installed"
         echo "try: sudo apt-get install scrot"
-    elif [ -z "$DISPLAY" ]; then
+    elif [ -z "$xdisplay" ]; then
         error_box "X is not running, we can't take screenshots, sorry!"
     else
         info_box "\
@@ -459,7 +467,7 @@ from where you can share it with us or with the world!"
 
 self_update() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    curl -sS https://get.pimoroni.com/pimstaller | bash -s - "-y"
+    \curl -sS https://get.pimoroni.com/pimstaller | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
     if [ -n "$xdisplay" ]; then
         status_box "Restarting!"
@@ -581,9 +589,11 @@ MAINLIST="\
 2/Display-o-Tron HAT/\
 3/Drum HAT/\
 4/Explorer HAT/\
-5/Piano HAT/\
-6/Skywriter HAT/\
-7/Unicorn HAT"
+5/Pan-Tilt HAT/\
+6/Piano HAT/\
+7/Propeller HAT/\
+8/Skywriter HAT/\
+9/Unicorn HAT"
 
     if [ -n "$xdisplay" ]; then
         HAT=$(zenity --title="$TITLE" --list \
@@ -609,9 +619,11 @@ MAINLIST="\
             2) get_install displayotron ;;
             3) get_install drumhat ;;
             4) get_install explorerhat ;;
-            5) get_install pianohat ;;
-            6) get_install skywriter ;;
-            7) get_install unicornhat ;;
+            5) get_install pantilthat ;;
+            6) get_install pianohat ;;
+            7) get_install propellerhat ;;
+            8) get_install skywriter ;;
+            9) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $HAT"
     fi
@@ -625,9 +637,10 @@ MAINLIST="\
 2/ESP IoT pHAT/\
 3/Explorer pHAT/\
 4/Micro Dot pHAT/\
-5/pHAT DAC/\
-6/Scroll pHAT/\
-7/Unicorn pHAT"
+5/Mote pHAT/\
+6/pHAT DAC/\
+7/Scroll pHAT/\
+8/Unicorn pHAT"
 
     if [ -n "$xdisplay" ]; then
         PHAT=$(zenity --title="$TITLE" --list \
@@ -653,9 +666,10 @@ MAINLIST="\
             2) get_install iotphat ;;
             3) get_install explorerhat ;;
             4) get_install microdotphat ;;
-            5) get_install phatdac ;;
-            6) get_install scrollphat ;;
-            7) get_install unicornhat ;;
+            5) get_install motephat ;;
+            6) get_install phatdac ;;
+            7) get_install scrollphat ;;
+            8) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $PHAT"
     fi
@@ -814,9 +828,14 @@ home_dir && WORKING_DIR="$USER_HOME/Pimoroni"
 cd $WORKING_DIR
 
 xdisplay="$DISPLAY"
-if [ $debugmode == "yes" ] && [ -n "$xdisplay" ]; then
+
+if ! command -v zenity > /dev/null || [ $debugmode == "yes" ]; then
     xdisplay=""
-fi; box_size
+fi
+
+box_size
+
+# program start
 
 if ! [ "$FORCE" == '-y' ]; then
     info_box "\

@@ -1,3 +1,12 @@
+pimstaller (1.0.3) UNRELEASED; urgency=low
+
+  * library check now case insensitive
+  * pip uninstall to purge deb inhibitors
+  * falls back on whiptail if zenity is not instaled
+  * missing products added in
+
+ -- Rogue Marechal <hal@pimoroni.com>  Tue, 15 Nov 2016 00:00:00 +0000
+
 pimstaller (1.0.2) UNRELEASED; urgency=low
 
   * can probe system and update all installed libs
