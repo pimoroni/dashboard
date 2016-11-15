@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-15" # version of the present implementation
-prodbuild="0040" # build for testing purposes
+prodbuild="0050" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -386,7 +386,7 @@ lib_chk() {
                 PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP2_MSG" == *"up-to-date"* ]]; then
-                    echo "${deblibpairs[$debpkg]} for Python 2 already up-to-date"
+                    echo "${deblibpairs[$debpkg]} for Python 2 is already the newest version."
                 else
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 2"
                 fi
@@ -399,7 +399,7 @@ lib_chk() {
                 PIP3_MSG=$(sudo $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
-                    echo "${deblibpairs[$debpkg]} for Python 3 already up-to-date"
+                    echo "${deblibpairs[$debpkg]} for Python 3 is already the newest version."
                 else
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 3"
                 fi
