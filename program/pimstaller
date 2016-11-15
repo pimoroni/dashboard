@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimstaller" # the name of the product to install
 prodversion="2016-11-15" # version of the present implementation
-prodbuild="0050" # build for testing purposes
+prodbuild="0120" # build for testing purposes
 scriptname="pimstaller" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -121,7 +121,7 @@ progress() {
         echo -n "..." && sleep 1
         ((count++))
     done
-	echo
+    echo
 }
 sudocheck() {
     if [ $(id -u) -ne 0 ]; then
@@ -137,9 +137,9 @@ sysclean() {
 
 sysupdate() {
     if ! $UPDATE_DB; then
-        echo "Updating apt indexes..." && progress 4 &
+        echo "Updating apt indexes..." && progress 3 &
         sudo apt-get update | grep -e "Reading package lists" || { warning "Apt failed to update indexes!" && exit 1; }
-        progress 4 && UPDATE_DB=true
+        progress 3 && UPDATE_DB=true
     fi
 }
 
@@ -279,7 +279,7 @@ space_chk() {
             newline
             warning  "There is not enough space left to proceed with  installation"
             if confirm "Would you like to attempt to expand your filesystem?"; then
-                curl -sS $GETPOOL/expandfs | sudo bash
+                \curl -sS $GETPOOL/expandfs | sudo bash
                 exit 1
             else
                 newline && exit 1
@@ -380,7 +380,7 @@ lib_chk() {
     sysupdate && UPDATE_DB=true
     echo "Checking for installed libraries..."
     for debpkg in "${!deblibpairs[@]}"; do
-        progress 4
+        progress 3
         if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python-$debpkg"; then
                 PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
@@ -390,8 +390,8 @@ lib_chk() {
                 else
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 2"
                 fi
-			else
-		        sudo $PIP2_BIN uninstall -y "$debpkg" &> /dev/null
+            else
+                sudo $PIP2_BIN uninstall -y "$debpkg" &> /dev/null
             fi
         fi
         if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "${deblibpairs[$debpkg]}"; then
@@ -403,8 +403,8 @@ lib_chk() {
                 else
                     echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 3"
                 fi
-			else
-		        sudo $PIP3_BIN uninstall -y "$debpkg" &> /dev/null
+            else
+                sudo $PIP3_BIN uninstall -y "$debpkg" &> /dev/null
             fi
         fi
     done
@@ -417,9 +417,9 @@ get_install() {
         sysupdate && UPDATE_DB=true
     fi
     if ! command -v curl > /dev/null; then
-		apt_pkg_install "curl"
-	fi
-    curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
+        apt_pkg_install "curl"
+    fi
+    \curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
 }
 
@@ -467,7 +467,7 @@ from where you can share it with us or with the world!"
 
 self_update() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    curl -sS https://get.pimoroni.com/pimstaller | bash -s - "-y"
+    \curl -sS https://get.pimoroni.com/pimstaller | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
     if [ -n "$xdisplay" ]; then
         status_box "Restarting!"
@@ -834,6 +834,8 @@ if ! command -v zenity > /dev/null || [ $debugmode == "yes" ]; then
 fi
 
 box_size
+
+# program start
 
 if ! [ "$FORCE" == '-y' ]; then
     info_box "\
