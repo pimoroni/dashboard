@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni" # the name of the product to install
 prodversion="2016-11-16" # version of the present implementation
-prodbuild="1200" # build for testing purposes
+prodbuild="1400" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -648,14 +648,15 @@ phat_menu() {
 
 TITLE="Pimoroni Product Installer"
 MAINLIST="\
-1/Enviro pHAT/\
-2/ESP IoT pHAT/\
-3/Explorer pHAT/\
-4/Micro Dot pHAT/\
-5/Mote pHAT/\
-6/pHAT DAC/\
-7/Scroll pHAT/\
-8/Unicorn pHAT"
+1/Automation pHAT/\
+2/Enviro pHAT/\
+3/ESP IoT pHAT/\
+4/Explorer pHAT/\
+5/Micro Dot pHAT/\
+6/Mote pHAT/\
+7/pHAT DAC/\
+8/Scroll pHAT/\
+9/Unicorn pHAT"
 
     if [ -n "$xdisplay" ]; then
         PHAT=$(zenity --title="$TITLE" --list \
@@ -677,14 +678,15 @@ MAINLIST="\
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$PHAT" in
-            1) get_install envirophat ;;
-            2) get_install iotphat ;;
-            3) get_install explorerhat ;;
-            4) get_install microdotphat ;;
-            5) get_install motephat ;;
-            6) get_install phatdac ;;
-            7) get_install scrollphat ;;
-            8) get_install unicornhat ;;
+            1) get_install automationhat ;;
+            2) get_install envirophat ;;
+            3) get_install iotphat ;;
+            4) get_install explorerhat ;;
+            5) get_install microdotphat ;;
+            6) get_install motephat ;;
+            7) get_install phatdac ;;
+            8) get_install scrollphat ;;
+            9) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $PHAT"
     fi
