@@ -2,19 +2,22 @@
 
 # script control variables
 
-reponame="" # leave this blank for auto-detection
-exename="pimoroni" # leave this blank for auto-detection
-packagename="" # leave this blank for auto-selection
+reponame="dashboard" # leave this blank for auto-detection
+libname="pimoroni" # leave this blank for auto-detection
+exename="pimoroni-dashboard" # leave this blank for auto-detection
+packagename="pimoroni" # leave this blank for auto-selection
 
 debianlog="debian/changelog"
 debcontrol="debian/control"
 debcopyright="debian/copyright"
+debinstall="debian/$libname.install"
 debrules="debian/rules"
 debreadme="debian/README"
 
 debdir="$(pwd)"
 rootdir="$(dirname $debdir)"
-libdir="$rootdir/library"
+libdir="$rootdir/program"
+desktopfile="$libdir/$exename.desktop"
 
 FLAG=false
 
@@ -38,10 +41,10 @@ newline() {
 
 # assessing repo and library variables
 
-if [ -z "$reponame" ] || [ -z "$exename" ]; then
-    inform "detecting reponame and exename..."
+if [ -z "$reponame" ] || [ -z "$libname" ]; then
+    inform "detecting reponame and libname..."
 else
-    inform "using reponame and exename overrides"
+    inform "using reponame and libname overrides"
 fi
 
 if [ -z "$reponame" ]; then
@@ -55,29 +58,29 @@ if [ -z "$reponame" ]; then
     reponame=$(echo "$reponame" | tr "[A-Z]" "[a-z]")
 fi
 
-if [ -z "$exename" ]; then
+if [ -z "$libname" ]; then
     cd "$libdir"
-    exename=$(grep "name" setup.py | tr -d "[:space:]" | cut -c 7- | rev | cut -c 3- | rev)
-    exename=$(echo "$exename" | tr "[A-Z]" "[a-z]") && cd "$debdir"
+    libname=$(grep "name" setup.py | tr -d "[:space:]" | cut -c 7- | rev | cut -c 3- | rev)
+    libname=$(echo "$libname" | tr "[A-Z]" "[a-z]") && cd "$debdir"
 fi
 
 if [ -z "$packagename" ]; then
-    packagename="$exename"
+    packagename="$libname"
 fi
 
-echo "reponame is $reponame and exename is $exename"
+echo "reponame is $reponame and libname is $libname"
 echo "output packages will be $packagename"
 
 # checking generating changelog file
 
 ./makelog.sh
-echo "building $exename..."
+echo "building $libname..."
 
 # checking debian/changelog file
 
 inform "checking debian/changelog file..."
 
-if ! head -n 1 $debianlog | grep "$exename" &> /dev/null; then
+if ! head -n 1 $debianlog | grep "$libname" &> /dev/null; then
     warning "library not mentioned in header!" && FLAG=true
 elif head -n 1 $debianlog | grep "UNRELEASED"; then
     warning "this changelog is not going to generate a release!"
@@ -92,7 +95,7 @@ if ! grep "^Source" $debcopyright | grep "$reponame" &> /dev/null; then
     warning "$(grep "^Source" $debcopyright)" && FLAG=true
 fi
 
-if ! grep "^Upstream-Name" $debcopyright | grep "$exename" &> /dev/null; then
+if ! grep "^Upstream-Name" $debcopyright | grep "$libname" &> /dev/null; then
     warning "$(grep "^Upstream-Name" $debcopyright)" && FLAG=true
 fi
 
@@ -100,7 +103,7 @@ fi
 
 inform "checking debian/control file..."
 
-if ! grep "^Source" $debcontrol | grep "$exename" &> /dev/null; then
+if ! grep "^Source" $debcontrol | grep "$libname" &> /dev/null; then
     warning "$(grep "^Source" $debcontrol)" && FLAG=true
 fi
 
@@ -125,11 +128,39 @@ if ! grep "dh_installinit" $debrules &> /dev/null; then
     warning "no dh_installinit override" && FLAG=true
 fi
 
+# checking install file
+
+inform "checking install file..."
+
+if ! grep "$exename " $debinstall &> /dev/null; then
+    warning "$exename was not found in $debinstall file!" && FLAG=true
+fi
+
+if ! grep "$exename.desktop" $debinstall &> /dev/null; then
+    warning "$exename.desktop was not found in $debinstall file!" && FLAG=true
+fi
+
+if ! grep "$exename.png" $debinstall &> /dev/null; then
+    warning "$exename.png was not found in $debinstall file!" && FLAG=true
+fi
+
+# checking desktop file
+
+inform "checking desktop file..."
+
+if ! grep "^Exec" $desktopfile | grep "$exename" &> /dev/null; then
+    warning "$(grep "^Exec" $desktopfile)" && FLAG=true
+fi
+
+if ! grep "^Icon" $desktopfile | grep "$exename" &> /dev/null; then
+    warning "$(grep "^Icon" $desktopfile)" && FLAG=true
+fi
+
 # checking debian/README file
 
 inform "checking debian/readme file..."
 
-if ! grep -e "$exename" -e "$reponame" $debreadme &> /dev/null; then
+if ! grep -e "$libname" -e "$reponame" $debreadme &> /dev/null; then
     warning "README does not seem to mention product, repo or lib!" && FLAG=true
 fi
 

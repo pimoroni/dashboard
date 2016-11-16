@@ -2,11 +2,11 @@ Source: pimoroni
 Section: utils
 Priority: extra
 Maintainer: Rogue Marechal <hal@pimoroni.com>
-Homepage: https://github.com/pimoroni/pimstaller
+Homepage: https://github.com/pimoroni/dashboard
 Build-Depends: debhelper (>= 9.0.0)
 Standards-Version: 3.9.6
-Vcs-Git: git://git@github.com:pimoroni/pimstaller.git
-Vcs-Browser: https://github.com/pimoroni/pimstaller
+Vcs-Git: git://git@github.com:pimoroni/dashboard.git
+Vcs-Browser: https://github.com/pimoroni/dashboard
 
 Package: pimoroni
 Architecture: all

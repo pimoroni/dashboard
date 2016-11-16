@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Pimoroni Dashboard
+GenericName=Pimoroni Dashboard
+Comment=Manage software for Pimoroni products
+Exec=/usr/bin/pimoroni-dashboard
+Icon=/usr/share/pixmaps/pimoroni-dashboard.png
+Categories=Utility
+Terminal=true
