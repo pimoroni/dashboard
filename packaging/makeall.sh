@@ -10,13 +10,14 @@ packagename="pimoroni" # leave this blank for auto-selection
 debianlog="debian/changelog"
 debcontrol="debian/control"
 debcopyright="debian/copyright"
-debrules="debian/rules"
 debinstall="debian/$libname.install"
+debrules="debian/rules"
 debreadme="debian/README"
 
 debdir="$(pwd)"
 rootdir="$(dirname $debdir)"
-libdir="$rootdir/library"
+libdir="$rootdir/program"
+desktopfile="$libdir/$exename.desktop"
 
 FLAG=false
 
@@ -141,6 +142,18 @@ fi
 
 if ! grep "$exename.png" $debinstall &> /dev/null; then
     warning "$exename.png was not found in $debinstall file!" && FLAG=true
+fi
+
+# checking desktop file
+
+inform "checking desktop file..."
+
+if ! grep "^Exec" $desktopfile | grep "$exename" &> /dev/null; then
+    warning "$(grep "^Exec" $desktopfile)" && FLAG=true
+fi
+
+if ! grep "^Icon" $desktopfile | grep "$exename" &> /dev/null; then
+    warning "$(grep "^Icon" $desktopfile)" && FLAG=true
 fi
 
 # checking debian/README file
