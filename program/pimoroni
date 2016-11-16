@@ -21,10 +21,10 @@ DISCLAIMER
 
 # script control variables
 
-productname="Pimstaller" # the name of the product to install
-prodversion="2016-11-15" # version of the present implementation
-prodbuild="0120" # build for testing purposes
-scriptname="pimstaller" # the name of this script
+productname="Pimoroni" # the name of the product to install
+prodversion="2016-11-16" # version of the present implementation
+prodbuild="1200" # build for testing purposes
+scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
 debuguser="none" # optional test git user to use in debug mode
@@ -70,10 +70,10 @@ FAILED_PKG=false
 REMOVE_PKG=false
 UPDATE_DB=false
 
-DESKTOP_FILE="~/Desktop/pimstaller.desktop"
-DESKTOP_APP_FILE="/usr/share/applications/pimstaller.desktop"
-DESKTOP_ICON="/usr/share/pixmaps/pimstaller.png"
-DASHBOARD_SCRIPT="/usr/bin/pimstaller"
+DESKTOP_FILE="~/Desktop/pimoroni.desktop"
+DESKTOP_APP_FILE="/usr/share/applications/pimoroni.desktop"
+DESKTOP_ICON="/usr/share/pixmaps/pimoroni.png"
+DASHBOARD_SCRIPT="/usr/bin/pimoroni"
 
 # function define
 
@@ -296,6 +296,28 @@ check_network() {
     sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3 | head -n 1` &> /dev/null && return 0 || return 1
 }
 
+
+launch_url() {
+    check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
+    if command -v xdg-open > /dev/null; then
+        xdg-open "$1" && return 0
+    else
+      error_box "There was an error attempting to launch your browser!"
+    fi
+}
+
+get_install() {
+    check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
+    if [ "$1" != diagnostic ];then
+        sysupdate && UPDATE_DB=true
+    fi
+    if ! command -v curl > /dev/null; then
+        apt_pkg_install "curl"
+    fi
+    \curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
+    read -p "Press Enter to continue..." < /dev/tty
+}
+
 apt_pkg_req() {
     APT_CHK=$(dpkg-query -W -f='${Status}\n' $1 2> /dev/null | grep "install ok installed")
 
@@ -331,7 +353,7 @@ apt_deb_install() {
     newline
 }
 
-pip2_chk() {
+pip_cmd_chk() {
     if command -v pip2 > /dev/null; then
         PIP2_BIN="pip2"
     elif command -v pip-2.7 > /dev/null; then
@@ -341,9 +363,16 @@ pip2_chk() {
     else
         PIP2_BIN="pip"
     fi
+    if command -v pip3 > /dev/null; then
+        PIP3_BIN="pip3"
+    elif command -v pip-3.3 > /dev/null; then
+        PIP3_BIN="pip-3.3"
+    elif command -v pip-3.2 > /dev/null; then
+        PIP3_BIN="pip-3.2"
+    fi
 }
 
-pip2_pkg_req() {
+pip2_lib_req() {
     PIP2_CHK=$($PIP2_BIN list 2> /dev/null | grep -i "$1")
 
     if [ "" == "$PIP2_CHK" ]; then
@@ -353,19 +382,7 @@ pip2_pkg_req() {
     fi
 }
 
-pip3_chk() {
-    if command -v pip3 > /dev/null; then
-        PIP3_BIN="pip3"
-    elif command -v pip-3.3 > /dev/null; then
-        PIP3_BIN="pip-3.3"
-    elif command -v pip-3.2 > /dev/null; then
-        PIP3_BIN="pip-3.2"
-    else
-        PIP3_BIN="pip"
-    fi
-}
-
-pip3_pkg_req() {
+pip3_lib_req() {
     PIP3_CHK=$($PIP3_BIN list 2> /dev/null | grep -i "$1")
 
     if [ "" == "$PIP3_CHK" ]; then
@@ -376,12 +393,12 @@ pip3_pkg_req() {
 }
 
 lib_chk() {
-    newline && pip2_chk && pip3_chk
+    newline && pip_cmd_chk
     sysupdate && UPDATE_DB=true
     echo "Checking for installed libraries..."
     for debpkg in "${!deblibpairs[@]}"; do
         progress 3
-        if command -v $PIP2_BIN > /dev/null && ! pip2_pkg_req "${deblibpairs[$debpkg]}"; then
+        if command -v $PIP2_BIN > /dev/null && ! pip2_lib_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python-$debpkg"; then
                 PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
@@ -394,7 +411,7 @@ lib_chk() {
                 sudo $PIP2_BIN uninstall -y "$debpkg" &> /dev/null
             fi
         fi
-        if command -v $PIP3_BIN > /dev/null && ! pip3_pkg_req "${deblibpairs[$debpkg]}"; then
+        if command -v $PIP3_BIN > /dev/null && ! pip3_lib_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python3-$debpkg"; then
                 PIP3_MSG=$(sudo $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
@@ -411,37 +428,35 @@ lib_chk() {
     newline && inform "all libraries are now up-to-date!" && newline
 }
 
-get_install() {
-    check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    if [ "$1" != diagnostic ];then
-        sysupdate && UPDATE_DB=true
-    fi
-    if ! command -v curl > /dev/null; then
-        apt_pkg_install "curl"
-    fi
-    \curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
-    read -p "Press Enter to continue..." < /dev/tty
-}
-
-launch_url() {
-    check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    if command -v xdg-open > /dev/null; then
-        xdg-open "$1" && return 0
-    else
-      error_box "There was an error attempting to launch your browser!"
-    fi
-}
-
 save_stdout() {
-    savename=$(timestamp)-info.txt
-    if [ -n "$xdisplay" ]; then
-        get_install $1 2>&1 | tee ~/Desktop/$savename
-        sed -i "/Press Enter/d" ~/Desktop/$savename
-        info_box "Your system info has been saved to the Desktop!"
+    if [ "$1" == "diagnostic" ]; then
+        savename="$(timestamp)-info.txt"
+        savedir="~"
     else
-        get_install $1 2>&1 | tee ~/$savename
-        sed -i "/Press Enter/d" ~/$savename
-        info_box "Your system info has been saved to your home folder!"
+        savename="pimoroni-log.txt"
+        savedir="/tmp"
+    fi
+    
+    if [ -n "$xdisplay" ]; then
+        if [ "$1" != "logfile" ]; then
+            get_install "$1" 2>&1 | tee "$savedir/$savename"
+            sed -i "/Press Enter/d" "$savedir/$savename"
+        fi
+        if [ "$1" == "logfile" ] || [ "$1" == "diagnostic" ]; then
+            rm ~/Desktop/"$savename" &> /dev/null
+            mv "$savedir/$savename" ~/Desktop/ &> /dev/null
+            info_box "The file has been saved to the Desktop!"
+        fi
+    else
+        if [ "$1" != "logfile" ]; then
+            get_install "$1" 2>&1 | tee "$savedir/$savename"
+            sed -i "/Press Enter/d" "$savedir/$savename"
+        fi
+        if [ "$1" == "logfile" ] || [ "$1" == "diagnostic" ]; then
+            rm ~/"$savename" &> /dev/null
+            mv "$savedir/$savename" ~/ &> /dev/null
+            info_box "The file has been saved to your home folder!"
+        fi
     fi
 }
 
@@ -467,14 +482,14 @@ from where you can share it with us or with the world!"
 
 self_update() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    \curl -sS https://get.pimoroni.com/pimstaller | bash -s - "-y"
+    \curl -sS https://get.pimoroni.com/pimoroni | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
     if [ -n "$xdisplay" ]; then
         status_box "Restarting!"
     else
         status_box "Click OK to restart the program and complete the update procedure."
     fi
-    pimstaller -y
+    pimoroni -y
     exit 0
 }
 

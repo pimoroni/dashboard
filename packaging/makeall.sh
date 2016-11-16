@@ -3,7 +3,7 @@
 # script control variables
 
 reponame="" # leave this blank for auto-detection
-exename="pimstaller" # leave this blank for auto-detection
+exename="pimoroni" # leave this blank for auto-detection
 packagename="" # leave this blank for auto-selection
 
 debianlog="debian/changelog"

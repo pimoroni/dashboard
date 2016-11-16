@@ -1,4 +1,4 @@
-Source: pimstaller
+Source: pimoroni
 Section: utils
 Priority: extra
 Maintainer: Rogue Marechal <hal@pimoroni.com>
@@ -8,10 +8,9 @@ Standards-Version: 3.9.6
 Vcs-Git: git://git@github.com:pimoroni/pimstaller.git
 Vcs-Browser: https://github.com/pimoroni/pimstaller
 
-Package: pimstaller
+Package: pimoroni
 Architecture: all
 Depends: ${misc:Depends}, curl, scrot, whiptail, zenity
-Description: Pimoroni software installer
- Pimstaller is a setup dashboard for Pimoroni add-on boards. It provides
- a familiar GUI for installing product support software, documentation
- and examples.
+Description: Setup dashboard for Pimoroni add-on boards.
+ It provides a familiar graphical interface for installing
+ product support software, documentation and examples.

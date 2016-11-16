@@ -1,4 +1,11 @@
-pimstaller (1.0.3) UNRELEASED; urgency=low
+pimoroni (0.9.4) UNRELEASED; urgency=low
+
+  * executable rename to pimoroni
+  * preliminary support for logfile
+
+ -- Rogue Marechal <hal@pimoroni.com>  Wed, 16 Nov 2016 00:00:00 +0000
+
+pimoroni (0.9.3) UNRELEASED; urgency=low
 
   * library check now case insensitive
   * pip uninstall to purge deb inhibitors
@@ -7,7 +14,7 @@ pimstaller (1.0.3) UNRELEASED; urgency=low
 
  -- Rogue Marechal <hal@pimoroni.com>  Tue, 15 Nov 2016 00:00:00 +0000
 
-pimstaller (1.0.2) UNRELEASED; urgency=low
+pimoroni (0.9.2) UNRELEASED; urgency=low
 
   * can probe system and update all installed libs
   * denies execution as superuser
@@ -16,20 +23,16 @@ pimstaller (1.0.2) UNRELEASED; urgency=low
 
  -- Rogue Marechal <hal@pimoroni.com>  Sun, 13 Nov 2016 00:00:00 +0000
 
-pimstaller (1.0.1) UNRELEASED; urgency=low
+pimoroni (0.9.1) UNRELEASED; urgency=low
 
   * link to support forums added
 
  -- Rogue Marechal <hal@pimoroni.com>  Fri, 21 Oct 2016 00:00:00 +0000
 
-pimstaller (1.0.0) UNRELEASED; urgency=low
-
-  * Zenity support with Whiptail fallback
-
- -- Rogue Marechal <hal@pimoroni.com>  Wed, 19 Oct 2016 00:00:00 +0000
-
-pimstaller (0.9.0) UNRELEASED; urgency=low
+pimoroni (0.9.0) UNRELEASED; urgency=low
 
   * Functional multi-level dashboard
+  * Initial version with Zenity support
+  * Whiptail fallback if no X server detected
 
- -- Rogue Marechal <hal@pimoroni.com>  Thu, 21 Jul 2016 00:00:00 +0000
+ -- Rogue Marechal <hal@pimoroni.com>  Wed, 19 Oct 2016 00:00:00 +0000
