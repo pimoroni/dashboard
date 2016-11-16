@@ -13,5 +13,5 @@ Architecture: all
 Depends: ${misc:Depends}, curl, scrot, whiptail, zenity
 Description: Pimoroni software installer
  The Pimoroni Product Installer is a setup dashboard for Pimoroni add-on boards.
- It provides a familiar GUI for installing product support software, documentation
- and examples.
+ It provides a familiar GUI for installing product support software,
+ documentation and examples.
