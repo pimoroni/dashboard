@@ -1,3 +1,3 @@
-pimoroni /usr/bin/
-pimoroni.desktop /usr/share/applications/
-pimicon.png /usr/share/pixmaps/
+pimoroni-dashboard /usr/bin/
+pimoroni-dashboard.desktop /usr/share/applications/
+pimoroni-dashboard.png /usr/share/pixmaps/

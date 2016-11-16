@@ -21,9 +21,9 @@ DISCLAIMER
 
 # script control variables
 
-productname="Pimoroni Product Installer" # the name of the product to install
+productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="2016-11-16" # version of the present implementation
-prodbuild="1520" # build for testing purposes
+prodbuild="1625" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -70,10 +70,10 @@ FAILED_PKG=false
 REMOVE_PKG=false
 UPDATE_DB=false
 
-DESKTOP_FILE="~/Desktop/pimoroni.desktop"
-DESKTOP_APP_FILE="/usr/share/applications/pimoroni.desktop"
-DESKTOP_ICON="/usr/share/pixmaps/pimicon.png"
-DASHBOARD_SCRIPT="/usr/bin/pimoroni"
+DESKTOP_FILE="~/Desktop/pimoroni-dashboard.desktop"
+DESKTOP_APP_FILE="/usr/share/applications/pimoroni-dashboard.desktop"
+DESKTOP_ICON="/usr/share/pixmaps/pimoroni-dashboard.png"
+DASHBOARD_SCRIPT="/usr/bin/pimoroni-dashboard"
 
 # function define
 
@@ -489,7 +489,7 @@ self_update() {
     else
         status_box "Click OK to restart the program and complete the update procedure."
     fi
-    pimoroni -y
+    pimoroni-dashboard -y
     exit 0
 }
 
