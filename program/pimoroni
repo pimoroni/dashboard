@@ -21,9 +21,9 @@ DISCLAIMER
 
 # script control variables
 
-productname="Pimoroni" # the name of the product to install
+productname="Pimoroni Product Installer" # the name of the product to install
 prodversion="2016-11-16" # version of the present implementation
-prodbuild="1400" # build for testing purposes
+prodbuild="1520" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -72,7 +72,7 @@ UPDATE_DB=false
 
 DESKTOP_FILE="~/Desktop/pimoroni.desktop"
 DESKTOP_APP_FILE="/usr/share/applications/pimoroni.desktop"
-DESKTOP_ICON="/usr/share/pixmaps/pimoroni.png"
+DESKTOP_ICON="/usr/share/pixmaps/pimicon.png"
 DASHBOARD_SCRIPT="/usr/bin/pimoroni"
 
 # function define
@@ -482,7 +482,7 @@ from where you can share it with us or with the world!"
 
 self_update() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    \curl -sS https://get.pimoroni.com/pimoroni | bash -s - "-y"
+    \curl -sS https://get.pimoroni.com/dashboard | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
     if [ -n "$xdisplay" ]; then
         status_box "Restarting!"
@@ -555,7 +555,7 @@ box_size() {
 
 main_menu() {
 
-TITLE="Pimoroni Product Installer"
+TITLE="$productname"
 MAINLIST="\
 1/my Pimoroni product is a HAT/\
 2/my Pimoroni product is a pHAT/\
@@ -598,7 +598,7 @@ MAINLIST="\
 
 hat_menu() {
 
-TITLE="Pimoroni Product Installer"
+TITLE="$productname"
 MAINLIST="\
 1/Automation HAT/\
 2/Display-o-Tron HAT/\
@@ -646,7 +646,7 @@ MAINLIST="\
 
 phat_menu() {
 
-TITLE="Pimoroni Product Installer"
+TITLE="$productname"
 MAINLIST="\
 1/Automation pHAT/\
 2/Enviro pHAT/\
@@ -694,7 +694,7 @@ MAINLIST="\
 
 board_menu() {
 
-TITLE="Pimoroni Product Installer"
+TITLE="$productname"
 MAINLIST="\
 1/Blinkt!/\
 2/Display-o-Tron 3000/\
@@ -738,7 +738,7 @@ MAINLIST="\
 
 util_menu() {
 
-TITLE="Pimoroni Product Installer"
+TITLE="$productname"
 MAINLIST="\
 1/About this program/\
 2/Gather system info/\

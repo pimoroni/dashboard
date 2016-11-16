@@ -1,10 +1,10 @@
 [Desktop Entry]
-Encoding=UTF-8
-Name=Pimoroni
-GenericName=Pimoroni
-Comment=Manage software for Pimoroni products
-TryExec=lxterminal
-Exec=lxterminal --command /usr/bin/pimoroni
-Icon=/usr/share/pixmaps/pimicon.png
 Type=Application
-Categories=Utility;
+Encoding=UTF-8
+Name=Pimoroni Dashboard
+GenericName=Pimoroni Dashboard
+Comment=Manage software for Pimoroni products
+Exec=/usr/bin/pimoroni
+Icon=/usr/share/pixmaps/pimicon.png
+Categories=Utility
+Terminal=true
