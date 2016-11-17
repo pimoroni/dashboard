@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1611172245" # build for testing purposes
+prodbuild="1611172340" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -342,7 +342,14 @@ apt_pkg_install() {
 }
 
 apt_deb_chk() {
-    sudo apt-get --yes install "$1" 2> /dev/null | grep -e "$1 is already the newest" -e "Setting up $1" || return 1
+    BEFORE=$(dpkg-query -W "$1")
+    sudo apt-get --yes install "$1" &> /dev/null || return 1
+    AFTER=$(dpkg-query -W "$1")
+    if [ "$BEFORE" == "$AFTER" ]; then
+        echo "$1 is already the newest version"
+    else
+        echo "$1 was successfully upgraded"
+    fi
 }
 
 apt_deb_install() {
@@ -409,9 +416,9 @@ lib_chk() {
                 PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP2_MSG" == *"up-to-date"* ]]; then
-                    echo "${deblibpairs[$debpkg]} for Python 2 is already the newest version."
+                    echo "${deblibpairs[$debpkg]} for Python 2 is already the newest version"
                 else
-                    echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 2"
+                    echo "${deblibpairs[$debpkg]} for Python 2 was successfully upgraded"
                 fi
             else
                 sudo $PIP2_BIN uninstall -y "$debpkg" &> /dev/null
@@ -422,9 +429,9 @@ lib_chk() {
                 PIP3_MSG=$(sudo $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
-                    echo "${deblibpairs[$debpkg]} for Python 3 is already the newest version."
+                    echo "${deblibpairs[$debpkg]} for Python 3 is already the newest version"
                 else
-                    echo "Successfully upgraded ${deblibpairs[$debpkg]} for Python 3"
+                    echo "${deblibpairs[$debpkg]} for Python 3 was successfully upgraded"
                 fi
             else
                 sudo $PIP3_BIN uninstall -y "$debpkg" &> /dev/null
