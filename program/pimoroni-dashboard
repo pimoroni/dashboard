@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimoroni Dashboard" # the name of the product to install
-prodversion="2016-11-16" # version of the present implementation
-prodbuild="1625" # build for testing purposes
+prodversion="2016-11-17" # version of the present implementation
+prodbuild="0535" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -138,7 +138,8 @@ sysclean() {
 sysupdate() {
     if ! $UPDATE_DB; then
         echo "Updating apt indexes..." && progress 3 &
-        sudo apt-get update | grep -e "Reading package lists" || { warning "Apt failed to update indexes!" && exit 1; }
+        sudo apt-get update 1> /dev/null || { warning "Apt failed to update indexes!" && exit 1; }
+        echo "Reading package lists..."
         progress 3 && UPDATE_DB=true
     fi
 }
@@ -319,7 +320,7 @@ get_install() {
 }
 
 apt_pkg_req() {
-    APT_CHK=$(dpkg-query -W -f='${Status}\n' $1 2> /dev/null | grep "install ok installed")
+    APT_CHK=$(dpkg-query -W -f='${Status}\n' "$1" 2> /dev/null | grep "install ok installed")
 
     if [ "" == "$APT_CHK" ]; then
         echo "$1 is required"
@@ -343,7 +344,8 @@ apt_deb_chk() {
 apt_deb_install() {
     echo "Installing $1..."
     if [[ "$1" != *".deb"* ]]; then
-        sudo apt-get --yes install "$1" | grep -e "$1 is already the newest" -e "Setting up $1" || inform "Apt failed to install $1!\nFalling back on pypi..."
+        sudo apt-get --yes install "$1" &> /dev/null || inform "Apt failed to install $1!\nFalling back on pypi..."
+        dpkg-query -W -f='${Status}\n' "$1" 2> /dev/null | grep "install ok installed"
     else
         DEBDIR=`mktemp -d /tmp/pimoroni.XXXXXX`
         cd $DEBDIR

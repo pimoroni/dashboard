@@ -1,0 +1,25 @@
+.TH pimoroni-dashboard 1 "Nov 2016" "1.0.0"
+
+.SH NAME
+pimoroni-dashboard - a setup tool for Pimoroni add-on boards
+
+.SH SYNOPSIS
+pimoroni-dashboard [option]
+
+.SH DESCRIPTION
+The Pimoroni Dashboard is a setup tool for Pimoroni add-on boards. It provides a familiar GUI for installing product support software, documentation and examples.
+
+It also provides additional functionality such as taking screenshots for support purposes and updating libraries installed previously.
+
+Most of the functions require a network connection and many will download installer scripts over https, which are then executed in a terminal, before jumping back to the Dashboard.
+
+It uses zenity to display dialogs in X and falls back onto whiptail should there be no X session running. It can therefore be used over ssh without any problem.
+
+.SH OPTIONS
+-y bypasses self-update
+
+.SH AUTHOR
+Rogue Marechal <hal@pimoroni.com>
+
+.SH SEE ALSO
+apt-get(8), pip(1)
