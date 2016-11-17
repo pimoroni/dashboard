@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1611172340" # build for testing purposes
+prodbuild="1611172350" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -342,9 +342,9 @@ apt_pkg_install() {
 }
 
 apt_deb_chk() {
-    BEFORE=$(dpkg-query -W "$1")
+    BEFORE=$(dpkg-query -W "$1" 2> /dev/null)
     sudo apt-get --yes install "$1" &> /dev/null || return 1
-    AFTER=$(dpkg-query -W "$1")
+    AFTER=$(dpkg-query -W "$1" 2> /dev/null)
     if [ "$BEFORE" == "$AFTER" ]; then
         echo "$1 is already the newest version"
     else
