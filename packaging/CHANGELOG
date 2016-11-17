@@ -1,5 +1,6 @@
 pimoroni (0.9.5) UNRELEASED; urgency=low
 
+  * only performs update is necessary
   * improved support for localised systems
   * man page available
 

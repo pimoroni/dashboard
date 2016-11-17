@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimoroni Dashboard" # the name of the product to install
-prodversion="2016-11-17" # version of the present implementation
-prodbuild="0535" # build for testing purposes
+prodversion="1.0.0" # version of the present implementation
+prodbuild="1611172245" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -74,6 +74,10 @@ DESKTOP_FILE="~/Desktop/pimoroni-dashboard.desktop"
 DESKTOP_APP_FILE="/usr/share/applications/pimoroni-dashboard.desktop"
 DESKTOP_ICON="/usr/share/pixmaps/pimoroni-dashboard.png"
 DASHBOARD_SCRIPT="/usr/bin/pimoroni-dashboard"
+
+RASPOOL="http://mirrordirector.raspbian.org/raspbian/pool"
+DEBPOOL="http://ftp.debian.org/debian/pool"
+GETPOOL="https://get.pimoroni.com"
 
 # function define
 
@@ -377,7 +381,7 @@ pip_cmd_chk() {
 pip2_lib_req() {
     PIP2_CHK=$($PIP2_BIN list 2> /dev/null | grep -i "$1")
 
-    if [ "" == "$PIP2_CHK" ]; then
+    if [ -z "$PIP2_CHK" ]; then
         true
     else
         false
@@ -387,7 +391,7 @@ pip2_lib_req() {
 pip3_lib_req() {
     PIP3_CHK=$($PIP3_BIN list 2> /dev/null | grep -i "$1")
 
-    if [ "" == "$PIP3_CHK" ]; then
+    if [ -z "$PIP3_CHK" ]; then
         true
     else
         false
@@ -484,22 +488,29 @@ from where you can share it with us or with the world!"
 
 self_update() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    \curl -sS https://get.pimoroni.com/dashboard | bash -s - "-y"
-    read -p "Press Enter to continue..." < /dev/tty
-    if [ -n "$xdisplay" ]; then
-        status_box "Restarting!"
-    else
-        status_box "Click OK to restart the program and complete the update procedure."
+    VCHK=$(curl -sS "$GETPOOL/pimstaller" | grep -e "^debpackage=" | grep -e "$prodversion")
+    if [ -z "$VCHK" ]; then
+        if [ -n "$xdisplay" ]; then
+            status_box "Downloading update"
+        else
+            status_box "An update is available, click OK to download it."
+        fi
+        \curl -sS https://get.pimoroni.com/dashboard | bash -s - "-y"
+        read -p "Press Enter to continue..." < /dev/tty
+        if [ -n "$xdisplay" ]; then
+            status_box "Restarting!"
+        else
+            status_box "Click OK to restart the program and complete the update procedure."
+        fi
+        sleep 1 && pimoroni-dashboard -y && exit 0
     fi
-    pimoroni-dashboard -y
-    exit 0
 }
 
 about_box() {
     if [ -n "$xdisplay" ]; then
-        zenity --height=128 --width=256 --info --text "\n$productname\n$prodversion\nbuild $prodbuild" 2> /dev/null
+        zenity --height=128 --width=256 --info --text "\n$productname\version n$prodversion\nbuild $prodbuild" 2> /dev/null
     else
-        whiptail --msgbox "$productname $prodversion" $BOXHEIGHT $(($BOXWIDTH-10))
+        whiptail --msgbox "$productname\nversion $prodversion\n$prodbuild" $BOXHEIGHT $(($BOXWIDTH-10))
     fi
 }
 
@@ -857,18 +868,13 @@ box_size
 # program start
 
 if ! [ "$FORCE" == '-y' ]; then
+    self_update
     info_box "\
 This handy tool will help you get started with Pimoroni products.\n\
 Simply pick the add-on board you want to set up from the list,\n\
 hit select and we'll walk you through the install process in a\n\
 few easy steps. Enjoy!\n\n\
 The Pimoroni Crew"
-    if [ -n "$xdisplay" ]; then
-        status_box "Checking for updates..."
-    else
-        status_box "We will now check for available updates. Click OK."
-    fi
-    self_update
 fi
 
 listIFS="$IFS";
