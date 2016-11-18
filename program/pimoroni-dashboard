@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1611180125" # build for testing purposes
+prodbuild="1611180135" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -509,7 +509,7 @@ self_update() {
         else
             status_box "Click OK to restart the program and complete the update procedure."
         fi
-        sleep 1 && pimoroni-dashboard -y &
+        sleep 1 && pimoroni-dashboard -y
         exit 0 # must be on separate line
     fi
 }
