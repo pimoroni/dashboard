@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1611172350" # build for testing purposes
+prodbuild="1611180125" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -509,13 +509,14 @@ self_update() {
         else
             status_box "Click OK to restart the program and complete the update procedure."
         fi
-        sleep 1 && pimoroni-dashboard -y && exit 0
+        sleep 1 && pimoroni-dashboard -y &
+        exit 0 # must be on separate line
     fi
 }
 
 about_box() {
     if [ -n "$xdisplay" ]; then
-        zenity --height=128 --width=256 --info --text "\n$productname\nversion n$prodversion\nbuild $prodbuild" 2> /dev/null
+        zenity --height=128 --width=256 --info --text "\n$productname\nversion $prodversion\nbuild $prodbuild" 2> /dev/null
     else
         whiptail --msgbox "$productname\nversion $prodversion\n$prodbuild" $BOXHEIGHT $(($BOXWIDTH-10))
     fi
@@ -875,13 +876,13 @@ box_size
 # program start
 
 if ! [ "$FORCE" == '-y' ]; then
-    self_update
     info_box "\
 This handy tool will help you get started with Pimoroni products.\n\
 Simply pick the add-on board you want to set up from the list,\n\
 hit select and we'll walk you through the install process in a\n\
 few easy steps. Enjoy!\n\n\
 The Pimoroni Crew"
+    self_update
 fi
 
 listIFS="$IFS";
