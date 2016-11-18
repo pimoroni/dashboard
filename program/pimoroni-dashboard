@@ -515,7 +515,7 @@ self_update() {
 
 about_box() {
     if [ -n "$xdisplay" ]; then
-        zenity --height=128 --width=256 --info --text "\n$productname\version n$prodversion\nbuild $prodbuild" 2> /dev/null
+        zenity --height=128 --width=256 --info --text "\n$productname\nversion n$prodversion\nbuild $prodbuild" 2> /dev/null
     else
         whiptail --msgbox "$productname\nversion $prodversion\n$prodbuild" $BOXHEIGHT $(($BOXWIDTH-10))
     fi
@@ -619,7 +619,7 @@ MAINLIST="\
 hat_menu() {
 
 TITLE="$productname"
-MAINLIST="\
+HATLIST="\
 1/Automation HAT/\
 2/Display-o-Tron HAT/\
 3/Drum HAT/\
@@ -635,13 +635,13 @@ MAINLIST="\
             --column="Option" --column="Description" \
             --cancel-label=Back --ok-label=Select \
             --height=$BOXHEIGHT --width=$BOXWIDTH \
-            $MAINLIST 2> /dev/null
+            $HATLIST 2> /dev/null
         )
     else
         HAT=$(whiptail --title "$TITLE" --menu "" \
             --cancel-button Back --ok-button Select \
             $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
-            $MAINLIST 3>&1 1>&2 2>&3
+            $HATLIST 3>&1 1>&2 2>&3
         )
     fi
 
@@ -667,7 +667,7 @@ MAINLIST="\
 phat_menu() {
 
 TITLE="$productname"
-MAINLIST="\
+PHATLIST="\
 1/Automation pHAT/\
 2/Enviro pHAT/\
 3/ESP IoT pHAT/\
@@ -683,13 +683,13 @@ MAINLIST="\
             --column="Option" --column="Description" \
             --cancel-label=Back --ok-label=Select \
             --height=$BOXHEIGHT --width=$BOXWIDTH \
-            $MAINLIST 2> /dev/null
+            $PHATLIST 2> /dev/null
         )
     else
         PHAT=$(whiptail --title "$TITLE" --menu "" \
             --cancel-button Back --ok-button Select \
             $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
-            $MAINLIST 3>&1 1>&2 2>&3
+            $PHATLIST 3>&1 1>&2 2>&3
         )
     fi
 
@@ -715,7 +715,7 @@ MAINLIST="\
 board_menu() {
 
 TITLE="$productname"
-MAINLIST="\
+ADDLIST="\
 1/Blinkt!/\
 2/Display-o-Tron 3000/\
 3/Flotilla/\
@@ -729,13 +729,13 @@ MAINLIST="\
             --column="Option" --column="Description" \
             --cancel-label=Back --ok-label=Select \
             --height=$BOXHEIGHT --width=$BOXWIDTH \
-            $MAINLIST 2> /dev/null
+            $ADDLIST 2> /dev/null
         )
     else
         BOARD=$(whiptail --title "$TITLE" --menu "" \
             --cancel-button Back --ok-button Select \
             $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
-            $MAINLIST 3>&1 1>&2 2>&3
+            $ADDLIST 3>&1 1>&2 2>&3
         )
     fi
 
@@ -759,7 +759,7 @@ MAINLIST="\
 util_menu() {
 
 TITLE="$productname"
-MAINLIST="\
+UTILIST="\
 1/About this program/\
 2/Gather system info/\
 3/Update my Pi software/\
@@ -771,13 +771,13 @@ MAINLIST="\
             --column="Option" --column="Description" \
             --cancel-label=Back --ok-label=Select \
             --height=$BOXHEIGHT --width=$BOXWIDTH \
-            $MAINLIST 2> /dev/null
+            $UTILIST 2> /dev/null
         )
     else
         UTIL=$(whiptail --title "$TITLE" --menu "" \
             --cancel-button Back --ok-button Select \
             $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
-            $MAINLIST 3>&1 1>&2 2>&3
+            $UTILIST 3>&1 1>&2 2>&3
         )
     fi
 
