@@ -1,3 +1,9 @@
+pimoroni (0.9.6) UNRELEASED; urgency=low
+
+  * switch to dashboard remote script for self-update
+
+ -- Rogue Marechal <hal@pimoroni.com>  Mon, 21 Nov 2016 12:23:56 +0000
+
 pimoroni (0.9.5) UNRELEASED; urgency=low
 
   * only performs update if necessary

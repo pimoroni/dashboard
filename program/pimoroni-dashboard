@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1611180135" # build for testing purposes
+prodbuild="1611181945" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -495,7 +495,7 @@ from where you can share it with us or with the world!"
 
 self_update() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
-    VCHK=$(curl -sS "$GETPOOL/pimstaller" | grep -e "^debpackage=" | grep -e "$prodversion")
+    VCHK=$(curl -sS "$GETPOOL/dashboard" | grep -e "^debpackage=" | grep -e "$prodversion")
     if [ -z "$VCHK" ]; then
         if [ -n "$xdisplay" ]; then
             status_box "Downloading update"
