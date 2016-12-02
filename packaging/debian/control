@@ -10,7 +10,8 @@ Vcs-Browser: https://github.com/pimoroni/dashboard
 
 Package: pimoroni
 Architecture: all
-Depends: ${misc:Depends}, curl, scrot, whiptail, zenity
+Depends: ${misc:Depends}, curl, whiptail
+Suggests: scrot, zenity
 Description: Setup dashboard for Pimoroni add-on boards.
  It provides a familiar graphical interface for installing
  product support software, documentation and examples.
