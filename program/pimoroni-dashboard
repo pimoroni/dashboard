@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1612061955" # build for testing purposes
+prodbuild="1612081555" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -578,12 +578,13 @@ main_menu() {
 
 TITLE="$productname"
 MAINLIST="\
-1/my Pimoroni product is a HAT/\
-2/my Pimoroni product is a pHAT/\
-3/my product is something else/\
-4/update all installed libraries/\
-5/view product documentation/\
-6/I have a problem and need help"
+1/My Pimoroni product is a HAT/\
+2/My Pimoroni product is a pHAT/\
+3/My product is something else/\
+4/Update all installed libraries/\
+5/View product documentation/\
+6/Take me to the Pimoroni shop/\
+7/I have a problem and need help"
 
     if [ -n "$xdisplay" ]; then
         MAIN=$(zenity --title="$TITLE" --list \
@@ -610,8 +611,9 @@ MAINLIST="\
             2) phat_menu ;;
             3) board_menu ;;
             4) lib_chk ;;
-            5) launch_url "http://docs.pimoroni.com" ;;
-            6) util_menu ;;
+            5) launch_url "http://docs.pimoroni.com" & ;;
+            6) launch_url "https://shop.pimoroni.com" & ;;
+            7) util_menu ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $MAIN"
     fi
@@ -791,7 +793,7 @@ UTILIST="\
             2) save_stdout diagnostic ;;
             3) get_install uptodate ;;
             4) save_snap ;;
-            5) launch_url "http://forums.pimoroni.com" ;;
+            5) launch_url "http://forums.pimoroni.com" & ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $UTIL"
     fi
