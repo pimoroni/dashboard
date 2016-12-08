@@ -611,8 +611,8 @@ MAINLIST="\
             2) phat_menu ;;
             3) board_menu ;;
             4) lib_chk ;;
-            5) launch_url "http://docs.pimoroni.com" ;;
-            6) launch_url "https://shop.pimoroni.com" ;;
+            5) launch_url "http://docs.pimoroni.com" & ;;
+            6) launch_url "https://shop.pimoroni.com" & ;;
             7) util_menu ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $MAIN"
@@ -793,7 +793,7 @@ UTILIST="\
             2) save_stdout diagnostic ;;
             3) get_install uptodate ;;
             4) save_snap ;;
-            5) launch_url "http://forums.pimoroni.com" ;;
+            5) launch_url "http://forums.pimoroni.com" & ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $UTIL"
     fi
