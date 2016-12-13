@@ -1,3 +1,9 @@
+pimoroni (0.9.7) UNRELEASED; urgency=low
+
+  * tentative support for MATE
+
+ -- Rogue Marechal <hal@pimoroni.com>  Tue, 13 Dec 2016 00:00:00 +0000
+
 pimoroni (0.9.6) UNRELEASED; urgency=low
 
   * added link to shop
