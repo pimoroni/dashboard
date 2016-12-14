@@ -1,8 +1,9 @@
 pimoroni (0.9.7) UNRELEASED; urgency=low
 
-  * tentative support for MATE
+  * Rainbow HAT support added
+  * tentative support for MATE, Kano and PiTop
 
- -- Rogue Marechal <hal@pimoroni.com>  Tue, 13 Dec 2016 00:00:00 +0000
+ -- Rogue Marechal <hal@pimoroni.com>  Wed, 14 Dec 2016 00:00:00 +0000
 
 pimoroni (0.9.6) UNRELEASED; urgency=low
 

@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1612131945" # build for testing purposes
+prodbuild="1612141415" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -56,6 +56,7 @@ declare -A deblibpairs=( \
 ["pibrella"]="pibrella" \
 ["piglow"]="piglow" \
 ["propellerhat"]="p1" \
+["rainbowhat"]="rainbowhat" \
 ["scrollphat"]="scrollphat" \
 ["skywriterhat"]="skywriter" \
 ["unicornhat"]="unicornhat" )
@@ -637,8 +638,9 @@ HATLIST="\
 5/Pan-Tilt HAT/\
 6/Piano HAT/\
 7/Propeller HAT/\
-8/Skywriter HAT/\
-9/Unicorn HAT"
+8/Propeller HAT/\
+9/Skywriter HAT/\
+10/Unicorn HAT"
 
     if [ -n "$xdisplay" ]; then
         HAT=$(zenity --title="$TITLE" --list \
@@ -667,8 +669,9 @@ HATLIST="\
             5) get_install pantilthat ;;
             6) get_install pianohat ;;
             7) get_install propellerhat ;;
-            8) get_install skywriter ;;
-            9) get_install unicornhat ;;
+            8) get_install rainbowhat ;;
+            9) get_install skywriter ;;
+            10) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $HAT"
     fi
