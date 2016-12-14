@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1612141535" # build for testing purposes
+prodbuild="1612141615" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -177,62 +177,68 @@ arch_check() {
 }
 
 os_check() {
-    IS_RASPBIAN=false
     IS_MACOSX=false
+    IS_RASPBIAN=false
     IS_SUPPORTED=false
     IS_EXPERIMENTAL=false
 
     if [ -f /etc/os-release ]; then
-        if cat /etc/os-release | grep "Raspbian" > /dev/null; then
-            IS_RASPBIAN=true && IS_SUPPORTED=true
-        fi
         if command -v apt-get > /dev/null; then
+            if cat /etc/os-release | grep "Raspbian" > /dev/null; then
+                IS_RASPBIAN=true && IS_SUPPORTED=true
+            fi
             for os in ${osdeny[@]}; do
-                if [ $os == "Kano" ]; then
-                    if [ -d ~/.kano-settings ] || [ -d ~/.kanoprofile ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=false
-                    fi
-                elif [ $os == "PiTop" ]; then
-                    if [ -f ~/.pt-dashboard-config ] || [ -d ~/.pt-dashboard ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=false
-                    fi
-                elif [ $os == "Mate" ]; then
-                    if [ -d ~/.config/ubuntu-mate ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+                if cat /etc/os-release | grep "Raspbian" > /dev/null; then
+                    if [ $os == "Kano" ]; then
+                        if [ -d ~/.kano-settings ] || [ -d ~/.kanoprofile ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+                        fi
+                    elif [ $os == "PiTop" ]; then
+                        if [ -f ~/.pt-dashboard-config ] || [ -d ~/.pt-dashboard ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+                        fi
+                    elif [ $os == "Mate" ]; then
+                        if [ -d ~/.config/ubuntu-mate ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+                        fi
                     fi
                 elif cat /etc/os-release | grep $os > /dev/null; then
                     IS_SUPPORTED=false && IS_EXPERIMENTAL=false
                 fi
             done
             for os in ${oswarning[@]}; do
-                if [ $os == "Kano" ]; then
-                    if [ -d ~/.kano-settings ] || [ -d ~/.kanoprofile ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=true
-                    fi
-                elif [ $os == "PiTop" ]; then
-                    if [ -f ~/.pt-dashboard-config ] || [ -d ~/.pt-dashboard ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=true
-                    fi
-                elif [ $os == "Mate" ]; then
-                    if [ -d ~/.config/ubuntu-mate ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=true
+                if cat /etc/os-release | grep "Raspbian" > /dev/null; then
+                    if [ $os == "Kano" ]; then
+                        if [ -d ~/.kano-settings ] || [ -d ~/.kanoprofile ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=true
+                        fi
+                    elif [ $os == "PiTop" ]; then
+                        if [ -f ~/.pt-dashboard-config ] || [ -d ~/.pt-dashboard ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=true
+                        fi
+                    elif [ $os == "Mate" ]; then
+                        if [ -d ~/.config/ubuntu-mate ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=false && IS_EXPERIMENTAL=true
+                        fi
                     fi
                 elif cat /etc/os-release | grep $os > /dev/null; then
                     IS_SUPPORTED=false && IS_EXPERIMENTAL=true
                 fi
             done
             for os in ${osreleases[@]}; do
-                if [ $os == "Kano" ]; then
-                    if [ -d ~/.kano-settings ] || [ -d ~/.kanoprofile ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=true && IS_EXPERIMENTAL=false
-                    fi
-                elif [ $os == "PiTop" ]; then
-                    if [ -f ~/.pt-dashboard-config ] || [ -d ~/.pt-dashboard ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=true && IS_EXPERIMENTAL=false
-                    fi
-                elif [ $os == "Mate" ]; then
-                    if [ -d ~/.config/ubuntu-mate ]; then
-                        IS_RASPBIAN=false && IS_SUPPORTED=true && IS_EXPERIMENTAL=false
+                if cat /etc/os-release | grep "Raspbian" > /dev/null; then
+                    if [ $os == "Kano" ]; then
+                        if [ -d ~/.kano-settings ] || [ -d ~/.kanoprofile ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=true && IS_EXPERIMENTAL=false
+                        fi
+                    elif [ $os == "PiTop" ]; then
+                        if [ -f ~/.pt-dashboard-config ] || [ -d ~/.pt-dashboard ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=true && IS_EXPERIMENTAL=false
+                        fi
+                    elif [ $os == "Mate" ]; then
+                        if [ -d ~/.config/ubuntu-mate ]; then
+                            IS_RASPBIAN=false && IS_SUPPORTED=true && IS_EXPERIMENTAL=false
+                        fi
                     fi
                 elif cat /etc/os-release | grep $os > /dev/null; then
                     IS_SUPPORTED=true && IS_EXPERIMENTAL=false
