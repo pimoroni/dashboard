@@ -1,3 +1,13 @@
+pimoroni (0.9.8) UNRELEASED; urgency=low
+
+  * Picade HAT support added
+  * Speaker pHAT support added
+  * Picade PCB firware flash script added
+  * RetroPie added to allowed OS list
+  * Linaro detection added and disallowed
+
+ -- Rogue Marechal <hal@pimoroni.com>  Fri, 3 Feb 2017 00:00:00 +0000
+
 pimoroni (0.9.7) UNRELEASED; urgency=low
 
   * Rainbow HAT support added
