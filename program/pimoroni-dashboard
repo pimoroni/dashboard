@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.0" # version of the present implementation
-prodbuild="1612081555" # build for testing purposes
+prodbuild="1702031615" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -37,9 +37,9 @@ armv6="yes" # whether armv6 processors are supported
 armv7="yes" # whether armv7 processors are supported
 armv8="yes" # whether armv8 processors are supported
 raspbianonly="no" # whether the script is allowed to run on other OSes
-osreleases=( "Raspbian" "Kano" "Mate" "PiTop" ) # list os-releases supported
+osreleases=( "Raspbian" "Kano" "Mate" "PiTop" "RetroPie" ) # list os-releases supported
 oswarning=( "Debian" ) # list experimental os-releases
-osdeny=( "Darwin" "Kali" "Ubuntu" ) # list os-releases specifically disallowed
+osdeny=( "Darwin" "Kali" "Linaro" "Ubuntu" ) # list os-releases specifically disallowed
 
 declare -A deblibpairs=( \
 ["automationhat"]="automationhat" \
@@ -56,13 +56,13 @@ declare -A deblibpairs=( \
 ["pibrella"]="pibrella" \
 ["piglow"]="piglow" \
 ["propellerhat"]="p1" \
+["rainbowhat"]="rainbowhat" \
 ["scrollphat"]="scrollphat" \
 ["skywriterhat"]="skywriter" \
 ["unicornhat"]="unicornhat" )
 
 # setup variables
 
-FORCE=$1
 ASK_TO_REBOOT=false
 CURRENT_SETTING=false
 MIN_INSTALL=false
@@ -76,13 +76,14 @@ DESKTOP_ICON="/usr/share/pixmaps/pimoroni-dashboard.png"
 DASHBOARD_SCRIPT="/usr/bin/pimoroni-dashboard"
 
 RASPOOL="http://mirrordirector.raspbian.org/raspbian/pool"
+RPIPOOL="http://archive.raspberrypi.org/debian/pool"
 DEBPOOL="http://ftp.debian.org/debian/pool"
 GETPOOL="https://get.pimoroni.com"
 
 # function define
 
 confirm() {
-    if [ "$FORCE" == '-y' ]; then
+    if [ "$1" == '-y' ]; then
         true
     else
         read -r -p "$1 [y/N] " response < /dev/tty
@@ -157,7 +158,7 @@ sysupgrade() {
 sysreboot() {
     warning "Some changes made to your system require"
     warning "your computer to reboot to take effect."
-    newline
+    echo
     if prompt "Would you like to reboot now?"; then
         sync && sudo reboot
     fi
@@ -167,82 +168,48 @@ arch_check() {
     IS_ARMHF=false
     IS_ARMv6=false
 
-    if uname -m | grep "armv.l" > /dev/null; then
+    if uname -m | grep -q "armv.l"; then
         IS_ARMHF=true
-        if uname -m | grep "armv6l" > /dev/null; then
+        if uname -m | grep -q "armv6l"; then
             IS_ARMv6=true
         fi
     fi
 }
 
 os_check() {
-    IS_RASPBIAN=false
     IS_MACOSX=false
+    IS_RASPBIAN=false
     IS_SUPPORTED=false
     IS_EXPERIMENTAL=false
+    OS_NAME="Unknown"
 
-    if [ -f /etc/os-release ]; then
-        if cat /etc/os-release | grep "Raspbian" > /dev/null; then
-            IS_RASPBIAN=true && IS_SUPPORTED=true
-        fi
-        if command -v apt-get > /dev/null; then
-            for os in ${osreleases[@]}; do
-                if cat /etc/os-release | grep $os > /dev/null; then
-                    IS_SUPPORTED=true && IS_EXPERIMENTAL=false
-                fi
-            done
-            for os in ${oswarning[@]}; do
-                if cat /etc/os-release | grep $os > /dev/null; then
-                    IS_SUPPORTED=false && IS_EXPERIMENTAL=true
-                fi
-            done
-            for os in ${osdeny[@]}; do
-                if cat /etc/os-release | grep $os > /dev/null; then
-                    IS_SUPPORTED=false && IS_EXPERIMENTAL=false
-                fi
-            done
-        fi
+    if uname -s | grep -q "Darwin"; then
+        OS_NAME="Darwin" && IS_MACOSX=true
+    elif cat /etc/os-release | grep -q "Kali"; then
+        OS_NAME="Kali"
+    elif [ -d ~/.kano-settings ] || [ -d ~/.kanoprofile ]; then
+        OS_NAME="Kano"
+    elif whoami | grep -q "linaro"; then
+        OS_NAME="Linaro"
+    elif [ -d ~/.config/ubuntu-mate ];then
+        OS_NAME="Mate"
+    elif [ -d ~/.pt-os-dashboard ] || [ -d ~/.pt-dashboard ] || [ -f ~/.pt-dashboard-config ]; then
+        OS_NAME="PiTop"
+    elif command -v emulationstation > /dev/null; then
+        OS_NAME="RetroPie"
+    elif cat /etc/os-release | grep -q "Raspbian"; then
+        OS_NAME="Raspbian" && IS_RASPBIAN=true
+    elif cat /etc/os-release | grep -q "Debian"; then
+        OS_NAME="Debian"
+    elif cat /etc/os-release | grep -q "Ubuntu"; then
+        OS_NAME="Ubuntu"
     fi
-    if [ -d ~/.kano-settings ] || [ -d ~/.kanoprofile ]; then
-        IS_RASPBIAN=false
-        for os in ${oswarning[@]}; do
-            if [ $os == "Kano" ]; then
-                IS_SUPPORTED=false && IS_EXPERIMENTAL=true
-            fi
-        done
-        for os in ${osdeny[@]}; do
-            if [ $os == "Kano" ]; then
-                IS_SUPPORTED=false && IS_EXPERIMENTAL=false
-            fi
-        done
+
+    if [[ " ${osreleases[@]} " =~ " ${OS_NAME} " ]]; then
+        IS_SUPPORTED=true
     fi
-    if [ -f ~/.pt-dashboard-config ] || [ -d ~/.pt-dashboard ]; then
-        IS_RASPBIAN=false
-        for os in ${oswarning[@]}; do
-            if [ $os == "PiTop" ]; then
-                IS_SUPPORTED=false && IS_EXPERIMENTAL=true
-            fi
-        done
-        for os in ${osdeny[@]}; do
-            if [ $os == "PiTop" ]; then
-                IS_SUPPORTED=false && IS_EXPERIMENTAL=false
-            fi
-        done
-    fi
-    if [ -d ~/.config/ubuntu-mate ]; then
-        for os in ${osdeny[@]}; do
-            if [ $os == "Mate" ]; then
-                IS_SUPPORTED=false && IS_EXPERIMENTAL=false
-            fi
-        done
-    fi
-    if uname -s | grep "Darwin" > /dev/null; then
-        IS_MACOSX=true
-        for os in ${osdeny[@]}; do
-            if [ $os == "Darwin" ]; then
-                IS_SUPPORTED=false && IS_EXPERIMENTAL=false
-            fi
-        done
+    if [[ " ${oswarning[@]} " =~ " ${OS_NAME} " ]]; then
+        IS_EXPERIMENTAL=true
     fi
 }
 
@@ -251,13 +218,13 @@ raspbian_check() {
     IS_EXPERIMENTAL=false
 
     if [ -f /etc/os-release ]; then
-        if cat /etc/os-release | grep "/sid" > /dev/null; then
+        if cat /etc/os-release | grep -q "/sid"; then
             IS_SUPPORTED=false && IS_EXPERIMENTAL=true
-        elif cat /etc/os-release | grep "stretch" > /dev/null; then
+        elif cat /etc/os-release | grep -q "stretch"; then
             IS_SUPPORTED=false && IS_EXPERIMENTAL=true
-        elif cat /etc/os-release | grep "jessie" > /dev/null; then
+        elif cat /etc/os-release | grep -q "jessie"; then
             IS_SUPPORTED=true && IS_EXPERIMENTAL=false
-        elif cat /etc/os-release | grep "wheezy" > /dev/null; then
+        elif cat /etc/os-release | grep -q "wheezy"; then
             IS_SUPPORTED=true && IS_EXPERIMENTAL=false
         else
             IS_SUPPORTED=false && IS_EXPERIMENTAL=false
@@ -273,21 +240,21 @@ home_dir() {
             USER_HOME=$(getent passwd $USER | cut -d: -f6)
         fi
     else
-        warning "Running as root, login as a regular user with sudo rights!"
-        newline && exit 1
+        warning "Running as root, please log in as a regular user with sudo rights!"
+        echo && exit 1
     fi
 }
 
 space_chk() {
     if command -v stat > /dev/null && ! $IS_MACOSX; then
         if [ $spacereq -gt $(($(stat -f -c "%a*%S" /)/10**6)) ];then
-            newline
+            echo
             warning  "There is not enough space left to proceed with  installation"
             if confirm "Would you like to attempt to expand your filesystem?"; then
                 \curl -sS $GETPOOL/expandfs | sudo bash
                 exit 1
             else
-                newline && exit 1
+                echo && exit 1
             fi
         fi
     fi
@@ -338,7 +305,7 @@ apt_pkg_req() {
 apt_pkg_install() {
     echo "Installing $1..."
     sudo apt-get --yes install "$1" 1> /dev/null || { echo -e "Apt failed to install $1!\nFalling back on pypi..." && return 1; }
-    newline
+    echo
 }
 
 apt_deb_chk() {
@@ -363,7 +330,7 @@ apt_deb_install() {
         wget "$GETPOOL/resources/$1" &> /dev/null
         sudo dpkg -i "$DEBDIR/$1" | grep "Installing $1"
     fi
-    newline
+    echo
 }
 
 pip_cmd_chk() {
@@ -413,7 +380,7 @@ lib_chk() {
         progress 3
         if command -v $PIP2_BIN > /dev/null && ! pip2_lib_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python-$debpkg"; then
-                PIP2_MSG=$(sudo $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
+                PIP2_MSG=$(sudo -H $PIP2_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP2_MSG" == *"up-to-date"* ]]; then
                     echo "${deblibpairs[$debpkg]} for Python 2 is already the newest version"
@@ -426,7 +393,7 @@ lib_chk() {
         fi
         if command -v $PIP3_BIN > /dev/null && ! pip3_lib_req "${deblibpairs[$debpkg]}"; then
             if ! apt_deb_chk "python3-$debpkg"; then
-                PIP3_MSG=$(sudo $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
+                PIP3_MSG=$(sudo -H $PIP3_BIN install -U "${deblibpairs[$debpkg]}" \
                 | grep -i -e "installed ${deblibpairs[$debpkg]}" -i -e "up-to-date: ${deblibpairs[$debpkg]}")
                 if [[ "$PIP3_MSG" == *"up-to-date"* ]]; then
                     echo "${deblibpairs[$debpkg]} for Python 3 is already the newest version"
@@ -629,9 +596,11 @@ HATLIST="\
 4/Explorer HAT/\
 5/Pan-Tilt HAT/\
 6/Piano HAT/\
-7/Propeller HAT/\
-8/Skywriter HAT/\
-9/Unicorn HAT"
+7/Picade HAT/\
+8/Propeller HAT/\
+9/Rainbow HAT/\
+10/Skywriter HAT/\
+11/Unicorn HAT"
 
     if [ -n "$xdisplay" ]; then
         HAT=$(zenity --title="$TITLE" --list \
@@ -659,9 +628,11 @@ HATLIST="\
             4) get_install explorerhat ;;
             5) get_install pantilthat ;;
             6) get_install pianohat ;;
-            7) get_install propellerhat ;;
-            8) get_install skywriter ;;
-            9) get_install unicornhat ;;
+            7) get_install picadehat ;;
+            8) get_install propellerhat ;;
+            9) get_install rainbowhat ;;
+            10) get_install skywriter ;;
+            11) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $HAT"
     fi
@@ -679,7 +650,8 @@ PHATLIST="\
 6/Mote pHAT/\
 7/pHAT DAC/\
 8/Scroll pHAT/\
-9/Unicorn pHAT"
+9/Speaker pHAT/\
+10/Unicorn pHAT"
 
     if [ -n "$xdisplay" ]; then
         PHAT=$(zenity --title="$TITLE" --list \
@@ -709,7 +681,8 @@ PHATLIST="\
             6) get_install motephat ;;
             7) get_install phatdac ;;
             8) get_install scrollphat ;;
-            9) get_install unicornhat ;;
+            9) get_install speakerphat ;;
+            10) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $PHAT"
     fi
@@ -724,8 +697,9 @@ ADDLIST="\
 3/Flotilla/\
 4/Mote/\
 5/Pibrella/\
-6/Piglow/\
-7/Skywriter"
+6/Picade PCB/\
+7/Piglow/\
+8/Skywriter"
 
     if [ -n "$xdisplay" ]; then
         BOARD=$(zenity --title="$TITLE" --list \
@@ -752,8 +726,9 @@ ADDLIST="\
             3) get_install flotilla ;;
             4) get_install mote ;;
             5) get_install pibrella ;;
-            6) get_install piglow ;;
-            7) get_install skywriter ;;
+            6) get_install picadefw ;;
+            7) get_install piglow ;;
+            8) get_install skywriter ;;
             *) error_box --text "Error: unrecognized option";;
         esac ||error_box "There was an error running option $BOARD"
     fi
@@ -877,7 +852,7 @@ box_size
 
 # program start
 
-if ! [ "$FORCE" == '-y' ]; then
+if ! [ "$1" == '-y' ]; then
     info_box "\
 This handy tool will help you get started with Pimoroni products.\n\
 Simply pick the add-on board you want to set up from the list,\n\
