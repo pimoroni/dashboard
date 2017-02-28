@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimoroni Dashboard" # the name of the product to install
-prodversion="1.0.0" # version of the present implementation
-prodbuild="1702031615" # build for testing purposes
+prodversion="1.0.1" # version of the present implementation
+prodbuild="1702281905" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -39,7 +39,7 @@ armv8="yes" # whether armv8 processors are supported
 raspbianonly="no" # whether the script is allowed to run on other OSes
 osreleases=( "Raspbian" "Kano" "Mate" "PiTop" "RetroPie" ) # list os-releases supported
 oswarning=( "Debian" ) # list experimental os-releases
-osdeny=( "Darwin" "Kali" "Linaro" "Ubuntu" ) # list os-releases specifically disallowed
+osdeny=( "Darwin" "Kali" "Linaro" "Ubuntu" "Volumio" ) # list os-releases specifically disallowed
 
 declare -A deblibpairs=( \
 ["automationhat"]="automationhat" \
@@ -52,17 +52,20 @@ declare -A deblibpairs=( \
 ["mote"]="mote" \
 ["motephat"]="motephat" \
 ["pantilthat"]="pantilthat" \
+["phatbeat"]="phatbeat" \
 ["pianohat"]="pianohat" \
 ["pibrella"]="pibrella" \
 ["piglow"]="piglow" \
 ["propellerhat"]="p1" \
 ["rainbowhat"]="rainbowhat" \
 ["scrollphat"]="scrollphat" \
+["scrollphathd"]="scrollphathd" \
 ["skywriterhat"]="skywriter" \
 ["unicornhat"]="unicornhat" )
 
 # setup variables
 
+FORCE=$1
 ASK_TO_REBOOT=false
 CURRENT_SETTING=false
 MIN_INSTALL=false
@@ -70,10 +73,13 @@ FAILED_PKG=false
 REMOVE_PKG=false
 UPDATE_DB=false
 
-DESKTOP_FILE="~/Desktop/pimoroni-dashboard.desktop"
-DESKTOP_APP_FILE="/usr/share/applications/pimoroni-dashboard.desktop"
-DESKTOP_ICON="/usr/share/pixmaps/pimoroni-dashboard.png"
-DASHBOARD_SCRIPT="/usr/bin/pimoroni-dashboard"
+AUTOSTART=~/.config/lxsession/LXDE-pi/autostart
+BOOTCMD=/boot/cmdline.txt
+CONFIG=/boot/config.txt
+APTSRC=/etc/apt/sources.list
+INITABCONF=/etc/inittab
+BLACKLIST=/etc/modprobe.d/raspi-blacklist.conf
+LOADMOD=/etc/modules
 
 RASPOOL="http://mirrordirector.raspbian.org/raspbian/pool"
 RPIPOOL="http://archive.raspberrypi.org/debian/pool"
@@ -83,7 +89,7 @@ GETPOOL="https://get.pimoroni.com"
 # function define
 
 confirm() {
-    if [ "$1" == '-y' ]; then
+    if [ "$FORCE" == '-y' ]; then
         true
     else
         read -r -p "$1 [y/N] " response < /dev/tty
@@ -197,6 +203,8 @@ os_check() {
         OS_NAME="PiTop"
     elif command -v emulationstation > /dev/null; then
         OS_NAME="RetroPie"
+    elif cat /etc/os-release | grep -q "volumio"; then
+        OS_NAME="Volumio"
     elif cat /etc/os-release | grep -q "Raspbian"; then
         OS_NAME="Raspbian" && IS_RASPBIAN=true
     elif cat /etc/os-release | grep -q "Debian"; then
@@ -251,8 +259,7 @@ space_chk() {
             echo
             warning  "There is not enough space left to proceed with  installation"
             if confirm "Would you like to attempt to expand your filesystem?"; then
-                \curl -sS $GETPOOL/expandfs | sudo bash
-                exit 1
+                curl -sS $GETPOOL/expandfs | sudo bash && exit 1
             else
                 echo && exit 1
             fi
@@ -268,7 +275,6 @@ check_network() {
     sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3 | head -n 1` &> /dev/null && return 0 || return 1
 }
 
-
 launch_url() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
     if command -v xdg-open > /dev/null; then
@@ -281,12 +287,12 @@ launch_url() {
 get_install() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
     if [ "$1" != diagnostic ];then
-        sysupdate && UPDATE_DB=true
+        sysupdate
     fi
     if ! command -v curl > /dev/null; then
         apt_pkg_install "curl"
     fi
-    \curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
+    curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
     read -p "Press Enter to continue..." < /dev/tty
 }
 
@@ -304,8 +310,7 @@ apt_pkg_req() {
 
 apt_pkg_install() {
     echo "Installing $1..."
-    sudo apt-get --yes install "$1" 1> /dev/null || { echo -e "Apt failed to install $1!\nFalling back on pypi..." && return 1; }
-    echo
+    sudo apt-get --yes install "$1" 1> /dev/null || { inform "Apt failed to install $1!\nFalling back on pypi..." && return 1; }
 }
 
 apt_deb_chk() {
@@ -330,7 +335,6 @@ apt_deb_install() {
         wget "$GETPOOL/resources/$1" &> /dev/null
         sudo dpkg -i "$DEBDIR/$1" | grep "Installing $1"
     fi
-    echo
 }
 
 pip_cmd_chk() {
@@ -373,9 +377,8 @@ pip3_lib_req() {
 }
 
 lib_chk() {
-    newline && pip_cmd_chk
-    sysupdate && UPDATE_DB=true
-    echo "Checking for installed libraries..."
+    sysupdate && pip_cmd_chk
+    echo -e "\nChecking for installed libraries..."
     for debpkg in "${!deblibpairs[@]}"; do
         progress 3
         if command -v $PIP2_BIN > /dev/null && ! pip2_lib_req "${deblibpairs[$debpkg]}"; then
@@ -405,7 +408,7 @@ lib_chk() {
             fi
         fi
     done
-    newline && inform "all libraries are now up-to-date!" && newline
+    inform "\nall libraries are now up-to-date!\n"
 }
 
 save_stdout() {
@@ -648,10 +651,12 @@ PHATLIST="\
 4/Explorer pHAT/\
 5/Micro Dot pHAT/\
 6/Mote pHAT/\
-7/pHAT DAC/\
-8/Scroll pHAT/\
-9/Speaker pHAT/\
-10/Unicorn pHAT"
+7/pHAT BEAT/\
+8/pHAT DAC/\
+9/Scroll pHAT/\
+10/Scroll pHAT HD/\
+11/Speaker pHAT/\
+12/Unicorn pHAT"
 
     if [ -n "$xdisplay" ]; then
         PHAT=$(zenity --title="$TITLE" --list \
@@ -679,10 +684,12 @@ PHATLIST="\
             4) get_install explorerhat ;;
             5) get_install microdotphat ;;
             6) get_install motephat ;;
-            7) get_install phatdac ;;
-            8) get_install scrollphat ;;
-            9) get_install speakerphat ;;
-            10) get_install unicornhat ;;
+            7) get_install phatbeat ;;
+            8) get_install phatdac ;;
+            9) get_install scrollphat ;;
+            10) get_install scrollphathd ;;
+            11) get_install speakerphat ;;
+            12) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $PHAT"
     fi
@@ -781,57 +788,55 @@ os_check
 space_chk
 
 if [ $debugmode != "no" ]; then
-    echo "USER_HOME is $USER_HOME" && newline
-    echo "IS_RASPBIAN is $IS_RASPBIAN"
-    echo "IS_MACOSX is $IS_MACOSX"
+    echo "USER_HOME is $USER_HOME"
+    echo "OS_NAME is $OS_NAME"
     echo "IS_SUPPORTED is $IS_SUPPORTED"
     echo "IS_EXPERIMENTAL is $IS_EXPERIMENTAL"
-    newline
+    echo
 fi
 
 if ! $IS_ARMHF; then
     warning "This hardware is not supported, sorry!"
-    warning "Config files have been left untouched"
-    newline && exit 1
+    warning "Config files have been left untouched\n"
+    exit 1
 fi
 
 if $IS_ARMv8 && [ $armv8 == "no" ]; then
-    warning "Sorry, your CPU is not supported by this installer"
-    newline && exit 1
+    warning "Sorry, your CPU is not supported by this installer\n"
+    exit 1
 elif $IS_ARMv7 && [ $armv7 == "no" ]; then
-    warning "Sorry, your CPU is not supported by this installer"
-    newline && exit 1
+    warning "Sorry, your CPU is not supported by this installer\n"
+    exit 1
 elif $IS_ARMv6 && [ $armv6 == "no" ]; then
-    warning "Sorry, your CPU is not supported by this installer"
-    newline && exit 1
+    warning "Sorry, your CPU is not supported by this installer\n"
+    exit 1
 fi
 
 if [ $raspbianonly == "yes" ] && ! $IS_RASPBIAN;then
-        warning "This script is intended for Raspbian on a Raspberry Pi!"
-        newline && exit 1
+    warning "This script is intended for Raspbian on a Raspberry Pi!\n"
+    exit 1
 fi
 
 if $IS_RASPBIAN; then
     raspbian_check
     if ! $IS_SUPPORTED && ! $IS_EXPERIMENTAL; then
-        newline && warning "--- Warning ---" && newline
+        warning "\n--- Warning ---\n"
         echo "The $productname installer"
         echo "does not work on this version of Raspbian."
         echo "Check https://github.com/$gitusername/$gitreponame"
-        echo "for additional information and support"
-        newline && exit 1
+        echo "for additional information and support" && echo
+        exit 1
     fi
 fi
 
 if ! $IS_SUPPORTED && ! $IS_EXPERIMENTAL; then
-        warning "Your operating system is not supported, sorry!"
-        newline && exit 1
+    warning "Your operating system is not supported, sorry!\n"
+    exit 1
 fi
 
 if $IS_EXPERIMENTAL; then
     warning "Support for your operating system is experimental. Please visit"
-    warning "forums.pimoroni.com if you experience issues with this product."
-    newline
+    warning "forums.pimoroni.com if you experience issues with this product.\n"
 fi
 
 if [ $forcesudo == "yes" ]; then
