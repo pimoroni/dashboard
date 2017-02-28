@@ -1,4 +1,12 @@
-pimoroni (0.9.8) UNRELEASED; urgency=low
+pimoroni (1.0.1) UNRELEASED; urgency=low
+
+  * Scroll pHAT HD support added
+  * pHAT BEAT support added
+  * Volumio detection added
+
+ -- Rogue Marechal <hal@pimoroni.com>  Tue, 28 Feb 2017 00:00:00 +0000
+
+pimoroni (1.0.0) stable; urgency=low
 
   * Picade HAT support added
   * Speaker pHAT support added
