@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.1" # version of the present implementation
-prodbuild="1703011205" # build for testing purposes
+prodbuild="1703011210" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -73,13 +73,10 @@ FAILED_PKG=false
 REMOVE_PKG=false
 UPDATE_DB=false
 
-AUTOSTART=~/.config/lxsession/LXDE-pi/autostart
-BOOTCMD=/boot/cmdline.txt
-CONFIG=/boot/config.txt
-APTSRC=/etc/apt/sources.list
-INITABCONF=/etc/inittab
-BLACKLIST=/etc/modprobe.d/raspi-blacklist.conf
-LOADMOD=/etc/modules
+DESKTOP_FILE="~/Desktop/pimoroni-dashboard.desktop"
+DESKTOP_APP_FILE="/usr/share/applications/pimoroni-dashboard.desktop"
+DESKTOP_ICON="/usr/share/pixmaps/pimoroni-dashboard.png"
+DASHBOARD_SCRIPT="/usr/bin/pimoroni-dashboard"
 
 RASPOOL="http://mirrordirector.raspbian.org/raspbian/pool"
 RPIPOOL="http://archive.raspberrypi.org/debian/pool"
