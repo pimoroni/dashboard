@@ -3,10 +3,6 @@ _build/
 *.o
 *.so
 *.a
-*.py[cod]
-*.egg-info
-dist/
-__pycache__
 .DS_Store
 *.deb
 *.dsc
