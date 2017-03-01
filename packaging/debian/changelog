@@ -1,3 +1,11 @@
+pimoroni (1.0.1) stable; urgency=low
+
+  * Scrollphat HD support added
+  * pHAT BEAT support added
+  * Volumio detection added and disallowed
+
+ -- Rogue Marechal <hal@pimoroni.com>  Wed, 1 Mar 2017 00:00:00 +0000
+
 pimoroni (1.0.0) stable; urgency=low
 
   * First public release
