@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.2" # version of the present implementation
-prodbuild="1703152325" # build for testing purposes
+prodbuild="1703152340" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -751,8 +751,10 @@ kits_menu() {
 TITLE="$productname"
 ADDLIST="\
 1/Starter Kit/\
-2/Pirate Radio/\
-3/Other projects"
+2/Mood Light/\
+3/Pirate Radio/\
+4/Scroll Bot/\
+5/Other projects"
 
     if [ -n "$xdisplay" ]; then
         KITS=$(zenity --title="$TITLE" --list \
@@ -775,8 +777,10 @@ ADDLIST="\
     elif [ $RETURN -eq 0 ]; then
         case "$KITS" in
             1) starter_menu ;;
-            2) radio_menu ;;
-            3) projects_menu ;;
+            2) get_install unicornhat ;;
+            3) radio_menu ;;
+            4) get_install scrollphathd ;;
+            5) projects_menu ;;
             *) error_box --text "Error: unrecognized option";;
         esac ||error_box "There was an error running option $KITS"
     fi
