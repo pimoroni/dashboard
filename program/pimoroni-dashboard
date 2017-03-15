@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.2" # version of the present implementation
-prodbuild="1703152225" # build for testing purposes
+prodbuild="1703152325" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -786,7 +786,8 @@ projects_menu() {
 
 TITLE="$productname"
 ADDLIST="\
-1/Bluetooth file transfer"
+1/Audio projects/\
+2/Misc projects"
 
     if [ -n "$xdisplay" ]; then
         PROJ=$(zenity --title="$TITLE" --list \
@@ -808,9 +809,78 @@ ADDLIST="\
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$PROJ" in
-            1) get_install bluetooth ;;
+            1) audio_menu ;;
+            2) misc_menu ;;
             *) error_box --text "Error: unrecognized option";;
         esac ||error_box "There was an error running option $PROJ"
+    fi
+}
+
+misc_menu() {
+
+TITLE="$productname"
+ADDLIST="\
+1/Bluetooth file transfer"
+
+    if [ -n "$xdisplay" ]; then
+        MISC=$(zenity --title="$TITLE" --list \
+            --column="Option" --column="Description" \
+            --cancel-label=Back --ok-label=Select \
+            --height=$BOXHEIGHT --width=$BOXWIDTH \
+            $ADDLIST 2> /dev/null
+        )
+    else
+        MISC=$(whiptail --title "$TITLE" --menu "" \
+            --cancel-button Back --ok-button Select \
+            $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
+            $ADDLIST 3>&1 1>&2 2>&3
+        )
+    fi
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$MISC" in
+            1) get_install bluetooth ;;
+            *) error_box --text "Error: unrecognized option";;
+        esac ||error_box "There was an error running option $MISC"
+    fi
+}
+
+audio_menu() {
+
+TITLE="$productname"
+ADDLIST="\
+1/Airplay Speaker/\
+2/Spotify Media Player/\
+3/VLC Radio"
+
+    if [ -n "$xdisplay" ]; then
+        AUDIO=$(zenity --title="$TITLE" --list \
+            --column="Option" --column="Description" \
+            --cancel-label=Back --ok-label=Select \
+            --height=$BOXHEIGHT --width=$BOXWIDTH \
+            $ADDLIST 2> /dev/null
+        )
+    else
+        AUDIO=$(whiptail --title "$TITLE" --menu "" \
+            --cancel-button Back --ok-button Select \
+            $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
+            $ADDLIST 3>&1 1>&2 2>&3
+        )
+    fi
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$AUDIO" in
+            1) get_install airdac ;;
+            2) get_install spotipy ;;
+            3) get_install vlcradio ;;
+            *) error_box --text "Error: unrecognized option";;
+        esac ||error_box "There was an error running option $AUDIO"
     fi
 }
 
