@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.2" # version of the present implementation
-prodbuild="1703091435" # build for testing purposes
+prodbuild="1703152225" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -413,7 +413,7 @@ lib_chk() {
 save_stdout() {
     if [ "$1" == "diagnostic" ]; then
         savename="$(timestamp)-info.txt"
-        savedir="~"
+        savedir=$HOME
     else
         savename="pimoroni-log.txt"
         savedir="/tmp"
@@ -590,6 +590,52 @@ MAINLIST="\
     fi
 }
 
+board_menu() {
+
+TITLE="$productname"
+ADDLIST="\
+1/Blinkt!/\
+2/Display-o-Tron 3000/\
+3/Flotilla/\
+4/Mote/\
+5/Pibrella/\
+6/Picade PCB/\
+7/Piglow/\
+8/Skywriter"
+
+    if [ -n "$xdisplay" ]; then
+        BOARD=$(zenity --title="$TITLE" --list \
+            --column="Option" --column="Description" \
+            --cancel-label=Back --ok-label=Select \
+            --height=$BOXHEIGHT --width=$BOXWIDTH \
+            $ADDLIST 2> /dev/null
+        )
+    else
+        BOARD=$(whiptail --title "$TITLE" --menu "" \
+            --cancel-button Back --ok-button Select \
+            $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
+            $ADDLIST 3>&1 1>&2 2>&3
+        )
+    fi
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$BOARD" in
+            1) get_install blinkt ;;
+            2) get_install dot3k ;;
+            3) get_install flotilla ;;
+            4) get_install mote ;;
+            5) get_install pibrella ;;
+            6) get_install picadefw ;;
+            7) get_install piglow ;;
+            8) get_install skywriter ;;
+            *) error_box --text "Error: unrecognized option";;
+        esac ||error_box "There was an error running option $BOARD"
+    fi
+}
+
 hat_menu() {
 
 TITLE="$productname"
@@ -700,58 +746,13 @@ PHATLIST="\
     fi
 }
 
-board_menu() {
-
-TITLE="$productname"
-ADDLIST="\
-1/Blinkt!/\
-2/Display-o-Tron 3000/\
-3/Flotilla/\
-4/Mote/\
-5/Pibrella/\
-6/Picade PCB/\
-7/Piglow/\
-8/Skywriter"
-
-    if [ -n "$xdisplay" ]; then
-        BOARD=$(zenity --title="$TITLE" --list \
-            --column="Option" --column="Description" \
-            --cancel-label=Back --ok-label=Select \
-            --height=$BOXHEIGHT --width=$BOXWIDTH \
-            $ADDLIST 2> /dev/null
-        )
-    else
-        BOARD=$(whiptail --title "$TITLE" --menu "" \
-            --cancel-button Back --ok-button Select \
-            $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
-            $ADDLIST 3>&1 1>&2 2>&3
-        )
-    fi
-
-    RETURN=$?
-    if [ $RETURN -eq 1 ]; then
-        return 0
-    elif [ $RETURN -eq 0 ]; then
-        case "$BOARD" in
-            1) get_install blinkt ;;
-            2) get_install dot3k ;;
-            3) get_install flotilla ;;
-            4) get_install mote ;;
-            5) get_install pibrella ;;
-            6) get_install picadefw ;;
-            7) get_install piglow ;;
-            8) get_install skywriter ;;
-            *) error_box --text "Error: unrecognized option";;
-        esac ||error_box "There was an error running option $BOARD"
-    fi
-}
-
 kits_menu() {
 
 TITLE="$productname"
 ADDLIST="\
 1/Starter Kit/\
-2/Pirate Radio"
+2/Pirate Radio/\
+3/Other Projects"
 
     if [ -n "$xdisplay" ]; then
         KITS=$(zenity --title="$TITLE" --list \
@@ -761,7 +762,7 @@ ADDLIST="\
             $ADDLIST 2> /dev/null
         )
     else
-        BOARD=$(whiptail --title "$TITLE" --menu "" \
+        KITS=$(whiptail --title "$TITLE" --menu "" \
             --cancel-button Back --ok-button Select \
             $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
             $ADDLIST 3>&1 1>&2 2>&3
@@ -773,10 +774,113 @@ ADDLIST="\
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$KITS" in
-            1) get_install getstarted ;;
-            2) get_install pirateradio ;;
+            1) starter_menu ;;
+            2) radio_menu ;;
+            3) projects_menu ;;
             *) error_box --text "Error: unrecognized option";;
         esac ||error_box "There was an error running option $KITS"
+    fi
+}
+
+projects_menu() {
+
+TITLE="$productname"
+ADDLIST="\
+1/Bluetooth file transfer"
+
+    if [ -n "$xdisplay" ]; then
+        PROJ=$(zenity --title="$TITLE" --list \
+            --column="Option" --column="Description" \
+            --cancel-label=Back --ok-label=Select \
+            --height=$BOXHEIGHT --width=$BOXWIDTH \
+            $ADDLIST 2> /dev/null
+        )
+    else
+        PROJ=$(whiptail --title "$TITLE" --menu "" \
+            --cancel-button Back --ok-button Select \
+            $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
+            $ADDLIST 3>&1 1>&2 2>&3
+        )
+    fi
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$PROJ" in
+            1) get_install bluetooth ;;
+            *) error_box --text "Error: unrecognized option";;
+        esac ||error_box "There was an error running option $PROJ"
+    fi
+}
+
+radio_menu() {
+
+TITLE="$productname"
+ADDLIST="\
+1/Airplay Speaker/\
+2/Spotify Media Player/\
+3/VLC Radio"
+
+    if [ -n "$xdisplay" ]; then
+        RADIO=$(zenity --title="$TITLE" --list \
+            --column="Option" --column="Description" \
+            --cancel-label=Back --ok-label=Select \
+            --height=$BOXHEIGHT --width=$BOXWIDTH \
+            $ADDLIST 2> /dev/null
+        )
+    else
+        RADIO=$(whiptail --title "$TITLE" --menu "" \
+            --cancel-button Back --ok-button Select \
+            $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
+            $ADDLIST 3>&1 1>&2 2>&3
+        )
+    fi
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$RADIO" in
+            1) get_install airdac ;;
+            2) get_install spotipy ;;
+            3) get_install vlcradio ;;
+            *) error_box --text "Error: unrecognized option";;
+        esac ||error_box "There was an error running option $RADIO"
+    fi
+}
+
+starter_menu() {
+
+TITLE="$productname"
+ADDLIST="\
+1/Getting started/\
+2/Join the Pimoroni forums"
+
+    if [ -n "$xdisplay" ]; then
+        START=$(zenity --title="$TITLE" --list \
+            --column="Option" --column="Description" \
+            --cancel-label=Back --ok-label=Select \
+            --height=$BOXHEIGHT --width=$BOXWIDTH \
+            $ADDLIST 2> /dev/null
+        )
+    else
+        START=$(whiptail --title "$TITLE" --menu "" \
+            --cancel-button Back --ok-button Select \
+            $BOXHEIGHT $(($BOXWIDTH-10)) $BOX_MENU_HEIGHT \
+            $ADDLIST 3>&1 1>&2 2>&3
+        )
+    fi
+
+    RETURN=$?
+    if [ $RETURN -eq 1 ]; then
+        return 0
+    elif [ $RETURN -eq 0 ]; then
+        case "$START" in
+            1) get_install getstarted ;;
+            2) launch_url "http://forums.pimoroni.com" & ;;
+            *) error_box --text "Error: unrecognized option";;
+        esac ||error_box "There was an error running option $START"
     fi
 }
 

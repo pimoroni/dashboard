@@ -1,10 +1,11 @@
 pimoroni (1.0.2) stable; urgency=low
 
   * Four Letter pHAT support added
-  * Touch HAT support added
+  * Touch pHAT support added
   * Kits and Projects section added
+  * Stdout save for diagnostic fixed
 
- -- Rogue Marechal <hal@pimoroni.com>  Thu, 9 Mar 2017 00:00:00 +0000
+ -- Rogue Marechal <hal@pimoroni.com>  Wed, 15 Mar 2017 00:00:00 +0000
 
 pimoroni (1.0.1) stable; urgency=low
 
