@@ -550,11 +550,11 @@ MAINLIST="\
 1/My Pimoroni product is a HAT/\
 2/My Pimoroni product is a pHAT/\
 3/My product is something else/\
-4/Pimoroni Kits and Projects/\
+4/Pimoroni kits and projects/\
 5/Update all installed libraries/\
 6/View product documentation/\
-7/Take me to the Pimoroni shop/\
-8/I have a problem and need help"
+7/I have a problem and need help/\
+8/Take me to the Pimoroni shop"
 
     if [ -n "$xdisplay" ]; then
         MAIN=$(zenity --title="$TITLE" --list \
@@ -752,7 +752,7 @@ TITLE="$productname"
 ADDLIST="\
 1/Starter Kit/\
 2/Pirate Radio/\
-3/Other Projects"
+3/Other projects"
 
     if [ -n "$xdisplay" ]; then
         KITS=$(zenity --title="$TITLE" --list \
