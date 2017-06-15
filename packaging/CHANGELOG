@@ -1,3 +1,12 @@
+pimoroni (1.0.3) stable; urgency=low
+
+  * HyperPixel support added
+  * Unicorn HAT HD support added
+  * OnOff SHIM and Zero LiPo support added
+  * more Kits and Projects added
+
+ -- Rogue Marechal <hal@pimoroni.com>  Wed, 15 Mar 2017 00:00:00 +0000
+
 pimoroni (1.0.2) stable; urgency=low
 
   * Four Letter pHAT support added

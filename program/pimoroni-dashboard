@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimoroni Dashboard" # the name of the product to install
-prodversion="1.0.2" # version of the present implementation
-prodbuild="1703152350" # build for testing purposes
+prodversion="1.0.3" # version of the present implementation
+prodbuild="1706151450" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -39,7 +39,7 @@ armv8="yes" # whether armv8 processors are supported
 raspbianonly="no" # whether the script is allowed to run on other OSes
 osreleases=( "Raspbian" "Kano" "Mate" "PiTop" "RetroPie" ) # list os-releases supported
 oswarning=( "Debian" ) # list experimental os-releases
-osdeny=( "Darwin" "Kali" "Linaro" "Ubuntu" "Volumio" ) # list os-releases specifically disallowed
+osdeny=( "Darwin" "Kali" "Linaro" "OSMC" "Ubuntu" "Volumio" ) # list os-releases specifically disallowed
 
 declare -A deblibpairs=( \
 ["automationhat"]="automationhat" \
@@ -63,7 +63,8 @@ declare -A deblibpairs=( \
 ["scrollphathd"]="scrollphathd" \
 ["skywriterhat"]="skywriter" \
 ["touchphat"]="touchphat" \
-["unicornhat"]="unicornhat" )
+["unicornhat"]="unicornhat" \
+["unicornhathd"]="unicornhathd" )
 
 # setup variables
 
@@ -127,12 +128,15 @@ newline() {
 
 progress() {
     count=0
-    until [ $count -eq $1 ]; do
+    until [ $count -eq 7 ]; do
         echo -n "..." && sleep 1
         ((count++))
-    done
-    echo
+    done;
+    if ps -C $1 > /dev/null; then
+        echo -en "\r\e[K" && progress $1
+    fi
 }
+
 sudocheck() {
     if [ $(id -u) -ne 0 ]; then
         echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
@@ -147,10 +151,9 @@ sysclean() {
 
 sysupdate() {
     if ! $UPDATE_DB; then
-        echo "Updating apt indexes..." && progress 3 &
+        echo "Updating apt indexes..." && progress apt-get &
         sudo apt-get update 1> /dev/null || { warning "Apt failed to update indexes!" && exit 1; }
-        echo "Reading package lists..."
-        progress 3 && UPDATE_DB=true
+        sleep 3 && UPDATE_DB=true
     fi
 }
 
@@ -202,6 +205,8 @@ os_check() {
         OS_NAME="PiTop"
     elif command -v emulationstation > /dev/null; then
         OS_NAME="RetroPie"
+    elif cat /etc/os-release | grep -q "OSMC"; then
+        OS_NAME="OSMC"
     elif cat /etc/os-release | grep -q "volumio"; then
         OS_NAME="Volumio"
     elif cat /etc/os-release | grep -q "Raspbian"; then
@@ -271,7 +276,7 @@ timestamp() {
 }
 
 check_network() {
-    sudo ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3 | head -n 1` &> /dev/null && return 0 || return 1
+    sudo ping -q -w 10 -c 1 8.8.8.8 | grep "received, 0" &> /dev/null && return 0 || return 1
 }
 
 launch_url() {
@@ -279,19 +284,19 @@ launch_url() {
     if command -v xdg-open > /dev/null; then
         xdg-open "$1" && return 0
     else
-      error_box "There was an error attempting to launch your browser!"
+        error_box "There was an error attempting to launch your browser!"
     fi
 }
 
 get_install() {
     check_network || (error_box "You don't appear to be connected to the internet, please check your connection and try again!" && exit 1)
     if [ "$1" != diagnostic ];then
-        sysupdate
+        sysupdate && UPDATE_DB=true
     fi
     if ! command -v curl > /dev/null; then
         apt_pkg_install "curl"
     fi
-    curl -sS https://get.pimoroni.com/$1 | bash -s - "-y"
+    curl -sS https://get.pimoroni.com/$1 | bash -s - "-y" $2
     read -p "Press Enter to continue..." < /dev/tty
 }
 
@@ -418,7 +423,7 @@ save_stdout() {
         savename="pimoroni-log.txt"
         savedir="/tmp"
     fi
-    
+
     if [ -n "$xdisplay" ]; then
         if [ "$1" != "logfile" ]; then
             get_install "$1" 2>&1 | tee "$savedir/$savename"
@@ -597,11 +602,14 @@ ADDLIST="\
 1/Blinkt!/\
 2/Display-o-Tron 3000/\
 3/Flotilla/\
-4/Mote/\
-5/Pibrella/\
-6/Picade PCB/\
-7/Piglow/\
-8/Skywriter"
+4/HyperPixel/\
+5/Mote/\
+6/OnOff SHIM/\
+7/Pibrella/\
+8/Picade PCB/\
+9/Piglow/\
+10/Skywriter/\
+11/Zero LiPo"
 
     if [ -n "$xdisplay" ]; then
         BOARD=$(zenity --title="$TITLE" --list \
@@ -626,11 +634,14 @@ ADDLIST="\
             1) get_install blinkt ;;
             2) get_install dot3k ;;
             3) get_install flotilla ;;
-            4) get_install mote ;;
-            5) get_install pibrella ;;
-            6) get_install picadefw ;;
-            7) get_install piglow ;;
-            8) get_install skywriter ;;
+            4) get_install hyperpixel ;;
+            5) get_install mote ;;
+            6) get_install onoffshim ;;
+            7) get_install pibrella ;;
+            8) get_install picadefw ;;
+            9) get_install piglow ;;
+            10) get_install skywriter ;;
+            11) get_install zerolipo ;;
             *) error_box --text "Error: unrecognized option";;
         esac ||error_box "There was an error running option $BOARD"
     fi
@@ -650,7 +661,8 @@ HATLIST="\
 8/Propeller HAT/\
 9/Rainbow HAT/\
 10/Skywriter HAT/\
-11/Unicorn HAT"
+11/Unicorn HAT/\
+12/Unicorn HAT HD"
 
     if [ -n "$xdisplay" ]; then
         HAT=$(zenity --title="$TITLE" --list \
@@ -683,6 +695,7 @@ HATLIST="\
             9) get_install rainbowhat ;;
             10) get_install skywriter ;;
             11) get_install unicornhat ;;
+            12) get_install unicornhathd ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $HAT"
     fi
@@ -754,9 +767,10 @@ ADDLIST="\
 2/Flotilla Kit/\
 3/Mote Kit/\
 4/Mood Light/\
-5/Pirate Radio/\
-6/Scroll Bot/\
-7/Other projects"
+5/OctoCam/\
+6/Pirate Radio/\
+7/Scroll Bot/\
+8/Other projects"
 
     if [ -n "$xdisplay" ]; then
         KITS=$(zenity --title="$TITLE" --list \
@@ -782,9 +796,10 @@ ADDLIST="\
             2) get_install flotilla ;;
             3) get_install mote ;;
             4) get_install unicornhat ;;
-            5) radio_menu ;;
-            6) get_install scrollphathd ;;
-            7) projects_menu ;;
+            5) launch_url "https://learn.pimoroni.com/tutorial/sandyj/motioneye-os-on-your-octocam" & ;;
+            6) radio_menu ;;
+            7) get_install scrollphathd ;;
+            8) projects_menu ;;
             *) error_box --text "Error: unrecognized option";;
         esac ||error_box "There was an error running option $KITS"
     fi
@@ -828,7 +843,9 @@ misc_menu() {
 
 TITLE="$productname"
 ADDLIST="\
-1/Bluetooth file transfer"
+1/Access point roaming/\
+2/Bluetooth file transfer/\
+3/Clean shutdown"
 
     if [ -n "$xdisplay" ]; then
         MISC=$(zenity --title="$TITLE" --list \
@@ -850,7 +867,9 @@ ADDLIST="\
         return 0
     elif [ $RETURN -eq 0 ]; then
         case "$MISC" in
-            1) get_install bluetooth ;;
+            1) get_install wifiroaming ;;
+            2) get_install bluetooth ;;
+            3) get_install cleanshutdown ;;
             *) error_box --text "Error: unrecognized option";;
         esac ||error_box "There was an error running option $MISC"
     fi
