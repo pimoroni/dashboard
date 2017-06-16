@@ -23,7 +23,7 @@ DISCLAIMER
 
 productname="Pimoroni Dashboard" # the name of the product to install
 prodversion="1.0.3" # version of the present implementation
-prodbuild="1706151505" # build for testing purposes
+prodbuild="1706161450" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -1097,10 +1097,10 @@ box_size
 
 # program start
 
-if [ -n "$1" ]; then
+if [ -n "$1" ] && [ "$1" != '-y' ]; then
     UPDATE_DB=true
     get_install "$1" && exit 0
-elif ! [ "$1" == '-y' ]; then
+elif [ "$1" != '-y' ]; then
     info_box "\
 This handy tool will help you get started with Pimoroni products.\n\
 Simply pick the add-on board you want to set up from the list,\n\
