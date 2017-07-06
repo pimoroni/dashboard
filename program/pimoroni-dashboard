@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimoroni Dashboard" # the name of the product to install
-prodversion="1.0.3" # version of the present implementation
-prodbuild="1706161450" # build for testing purposes
+prodversion="1.0.4" # version of the present implementation
+prodbuild="1707061440" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -49,6 +49,7 @@ declare -A deblibpairs=( \
 ["envirophat"]="envirophat" \
 ["explorerhat"]="explorerhat" \
 ["fourletterphat"]="fourletterphat" \
+["inkyphat"]="inkyphat" \
 ["microdotphat"]="microdotphat" \
 ["mote"]="mote" \
 ["motephat"]="motephat" \
@@ -710,15 +711,16 @@ PHATLIST="\
 3/ESP IoT pHAT/\
 4/Explorer pHAT/\
 5/Four Letter pHAT/\
-6/Micro Dot pHAT/\
-7/Mote pHAT/\
-8/pHAT BEAT/\
-9/pHAT DAC/\
-10/Scroll pHAT/\
-11/Scroll pHAT HD/\
-12/Speaker pHAT/\
-13/Touch pHAT/\
-14/Unicorn pHAT"
+6/Inky pHAT/\
+7/Micro Dot pHAT/\
+8/Mote pHAT/\
+9/pHAT BEAT/\
+10/pHAT DAC/\
+11/Scroll pHAT/\
+12/Scroll pHAT HD/\
+13/Speaker pHAT/\
+14/Touch pHAT/\
+15/Unicorn pHAT"
 
     if [ -n "$xdisplay" ]; then
         PHAT=$(zenity --title="$TITLE" --list \
@@ -745,15 +747,16 @@ PHATLIST="\
             3) get_install iotphat ;;
             4) get_install explorerhat ;;
             5) get_install fourletterphat ;;
-            6) get_install microdotphat ;;
-            7) get_install motephat ;;
-            8) get_install phatbeat ;;
-            9) get_install phatdac ;;
-            10) get_install scrollphat ;;
-            11) get_install scrollphathd ;;
-            12) get_install speakerphat ;;
-            13) get_install touchphat ;;
-            14) get_install unicornhat ;;
+            6) get_install inkyphat ;;
+            7) get_install microdotphat ;;
+            8) get_install motephat ;;
+            9) get_install phatbeat ;;
+            10) get_install phatdac ;;
+            11) get_install scrollphat ;;
+            12) get_install scrollphathd ;;
+            13) get_install speakerphat ;;
+            14) get_install touchphat ;;
+            15) get_install unicornhat ;;
             *) error_box "Error: unrecognized option";;
         esac ||error_box "There was an error running option $PHAT"
     fi

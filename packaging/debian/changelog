@@ -1,8 +1,16 @@
+pimoroni (1.0.4) stable; urgency=low
+
+  * Inky pHAT support added
+
+ -- Rogue Marechal <hal@pimoroni.com>  Thu, 06 Jul 2017 00:00:00 +0000
+
 pimoroni (1.0.3) stable; urgency=low
 
   * HyperPixel support added
   * Unicorn HAT HD support added
   * OnOff SHIM and Zero LiPo support added
+  * improved progress for apt-get update
+  * library to install can be passed as argument
   * more Kits and Projects added
 
  -- Rogue Marechal <hal@pimoroni.com>  Wed, 15 Mar 2017 00:00:00 +0000
