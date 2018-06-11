@@ -22,8 +22,8 @@ DISCLAIMER
 # script control variables
 
 productname="Pimoroni Dashboard" # the name of the product to install
-prodversion="1.0.4" # version of the present implementation
-prodbuild="1707061440" # build for testing purposes
+prodversion="1.0.5" # version of the present implementation
+prodbuild="1806111450" # build for testing purposes
 scriptname="pimoroni" # the name of this script
 spacereq=50 # minimum size required on root partition in MB
 debugmode="no" # whether the script should use debug routines
@@ -42,6 +42,7 @@ oswarning=( "Debian" ) # list experimental os-releases
 osdeny=( "Darwin" "Kali" "Linaro" "OSMC" "Ubuntu" "Volumio" ) # list os-releases specifically disallowed
 
 declare -A deblibpairs=( \
+["buttonshim"]="buttonshim" \
 ["automationhat"]="automationhat" \
 ["blinkt"]="blinkt" \
 ["displayotron"]="dot3k" \
@@ -601,16 +602,17 @@ board_menu() {
 TITLE="$productname"
 ADDLIST="\
 1/Blinkt!/\
-2/Display-o-Tron 3000/\
-3/Flotilla/\
-4/HyperPixel/\
-5/Mote/\
-6/OnOff SHIM/\
-7/Pibrella/\
-8/Picade PCB/\
-9/Piglow/\
-10/Skywriter/\
-11/Zero LiPo"
+2/Button SHIM/\
+3/Display-o-Tron 3000/\
+4/Flotilla/\
+5/HyperPixel/\
+6/Mote/\
+7/OnOff SHIM/\
+8/Pibrella/\
+9/Picade PCB/\
+10/Piglow/\
+11/Skywriter/\
+12/Zero LiPo"
 
     if [ -n "$xdisplay" ]; then
         BOARD=$(zenity --title="$TITLE" --list \
@@ -633,16 +635,17 @@ ADDLIST="\
     elif [ $RETURN -eq 0 ]; then
         case "$BOARD" in
             1) get_install blinkt ;;
-            2) get_install dot3k ;;
-            3) get_install flotilla ;;
-            4) get_install hyperpixel ;;
-            5) get_install mote ;;
-            6) get_install onoffshim ;;
-            7) get_install pibrella ;;
-            8) get_install picadefw ;;
-            9) get_install piglow ;;
-            10) get_install skywriter ;;
-            11) get_install zerolipo ;;
+            2) get_install buttonshim ;;
+            3) get_install dot3k ;;
+            4) get_install flotilla ;;
+            5) get_install hyperpixel ;;
+            6) get_install mote ;;
+            7) get_install onoffshim ;;
+            8) get_install pibrella ;;
+            9) get_install picadefw ;;
+            10) get_install piglow ;;
+            11) get_install skywriter ;;
+            12) get_install zerolipo ;;
             *) error_box --text "Error: unrecognized option";;
         esac ||error_box "There was an error running option $BOARD"
     fi
