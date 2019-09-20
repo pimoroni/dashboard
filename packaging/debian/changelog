@@ -1,3 +1,10 @@
+pimoroni (1.0.5) stable; urgency=low
+
+  * Experimental support for Buster
+  * Promoted Stretch support to stable
+
+ -- Phil Howard <phil@pimoroni.com>  Fri, 20 Sep 2019 00:00:00 +0000
+
 pimoroni (1.0.4) stable; urgency=low
 
   * Inky pHAT support added
